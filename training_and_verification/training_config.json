@@ -1,0 +1,11 @@
+latest_finish_date = "2019-02-01",
+earliest_start_date = "2015-01-01",
+min_simulation_duration_days = 365,
+max_simulation_duration_days = 400,
+num_iteration_per_bucket = 100,
+max_models = 10,
+exploration_param = {
+  start_value = 0.99,
+  end_value = 0.01,
+  delta_function = "linear", 
+},
