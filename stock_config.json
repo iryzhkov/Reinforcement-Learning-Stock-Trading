@@ -1,0 +1,8 @@
+// Config for stocks.
+stock_symbols = [
+  "GOOGL",
+  "AMZN",
+  "APPL",
+  "NTFL",
+  "SNAP"
+];
