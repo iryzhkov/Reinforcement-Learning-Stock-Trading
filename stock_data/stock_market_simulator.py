@@ -1,4 +1,4 @@
-class StockMarket:
+class StockMarketSimulator:
     def __init__(self):
         self.budget = 0;
         self.stocks = {};
