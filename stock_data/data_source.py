@@ -6,3 +6,6 @@ class RealStockData:
 # Should work good as a proof of concept.
 class SinusoidStockData:
     pass
+
+class RandomizedStockData:
+    pass

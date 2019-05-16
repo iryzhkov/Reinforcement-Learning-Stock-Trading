@@ -1,0 +1,13 @@
+{'simulation': {
+  'date_range': {
+    'start': '',
+    'finish': '',
+  },
+  'ml_agent_id': -1,
+  'exploration_param': 0,
+  'data_source': {},
+  'initial_state': {
+    'balance': -1,
+    'stocks': {},
+  },
+}}
