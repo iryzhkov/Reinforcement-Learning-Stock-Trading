@@ -1,0 +1,8 @@
+{'stock_simulation_config': {
+    'data_source': {},
+    'transaction_configuration' {
+      'buy_option': 'highest',
+      'sell_option': 'lowest',
+      'commission': 5.00,
+    },
+}}
