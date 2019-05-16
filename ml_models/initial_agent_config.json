@@ -1,1 +1,13 @@
-// Config for initialization of agent.
+{'ml_agent': {
+  'name': '',
+  'id': -1,
+  'used_stock_symbols': [],
+  'configuraiton': {
+    'days_back': 10,
+  },
+  'neural_network': false,
+  'future_consideration': 0,
+  'latest_performance': 0,
+  'number_of_simulations': 0,
+  'number_of_real_uses': 0,
+}}

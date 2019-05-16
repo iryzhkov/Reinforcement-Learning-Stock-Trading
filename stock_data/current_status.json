@@ -1,3 +1,6 @@
-// Current State of my account
-budget=0;
-stocks={};
+{'status': {
+  'balance': 1000.00,
+  'stocks': {
+    'GOOGL': 19,
+  },
+}}
