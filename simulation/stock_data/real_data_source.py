@@ -1,0 +1,2 @@
+class RealStockDataSource:
+    pass
