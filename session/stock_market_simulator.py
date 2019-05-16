@@ -12,17 +12,8 @@ class StockMarketSimulator:
         if (additional_budget > 0):
             self.budget += additional_budget
 
-    def addStockCodes(self, new_stock_codes):
-        for code in new_stock_codes:
-            if code not in self.stock_codes:
-                self.stock_codes.add(code);
-                self.stocks[code] = 0;
-                # TODO(iryzhkov): load price data for the new code
-
-    def buyStocks(self, date, stock_code, number_to_buy):
-        if stock_code in self.stock_codes:
-            # TODO(iryzhkov): get the price
-            self.stocks[stock_code] += number_to_buy
+    def buyStocks(self, date, stock_symbol, number_to_buy):
+        self.stocks[stock_code] += number_to_buy
             
     def getNetWorth(self):
         # TODO(iryzhkov): get net worth of the stocks
