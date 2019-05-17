@@ -1,11 +1,15 @@
 class StockMarketSimulator:
-    def __init__(self):
-	pass
+  def getPossibleActionsForDate(self, date, stock_symbols):
+    pass
 
-    def buyStocks(self, date, stock_symbol, number_to_buy):
-        self.stocks[stock_code] += number_to_buy
+  def buyStocks(self, date, stock_symbol, number_to_buy):
+    pass
             
-    def getNetWorth(self):
-        # TODO(iryzhkov): get net worth of the stocks
-        return self.budget
+  def getNetWorth(self):
+    pass
+
+  def getState(self):
+    pass
+
+    
 
