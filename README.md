@@ -4,10 +4,11 @@ Using historical stock data, train ML model to buy and sell stocks for fun (prob
 
 Stages:
  - [in progress] Structure out the code
- - [not started] Draw lots and lots of diagrams
+ - [in progress] Draw lots and lots of diagrams
  - [not started] Get internet stock data to work
  - [not started] Get generated stock data to work
  - [not started] Figure out tensorFlow for this project
+ - [not started] Figure out math for this project
  - [not started] Figure out simulation and simple training
  - [not started] Figure out simulation graph output
  - [not started] Do proof of concept using generated stock data
