@@ -1,7 +1,7 @@
 # Interface for stock data sources.
 class StockDataSource:
-  def getStockDataForDate(symbols, date):
-    pass
+    def getStockDataForDate(self, date, symbols):
+        raise NotImplementedError();
 
-  def getStockDataForDateRange(symbols, date_range):
-    pass
+    def getStockDataForDateRange(self, date_range, symbols):
+        raise NotImplementedError();
