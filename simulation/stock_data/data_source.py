@@ -5,3 +5,7 @@ class StockDataSource:
 
     def getStockDataForDateRange(self, date_range, symbols):
         raise NotImplementedError();
+
+class StockSymbolError(ValueError):
+    pass
+    
