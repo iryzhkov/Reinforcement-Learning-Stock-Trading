@@ -18,7 +18,6 @@ def getFilePath(file_name, file_format):
     return os.path.join(STORED_DATA_DIRECTORY, 
                         file_name + '.' + file_format);
 
-
 # Global object that keeps track of 
 class StockDataManager:
     def __init__(self):
@@ -78,11 +77,16 @@ class RealStockDataSource(data_source.StockDataSource):
     def __init__(self):
         pass
     
-
 # Keeps track stock data for each individual company
 # Also updates the values in the data file.
 class CompanyStockData:
-    def __init__(self, stock_symbol):
-        this.stock_symbol = stock_symbol
-        this.available_date_reange = (None, None)
+    def __init__(self, stock_symbol, stock_data_manager):
+        this.stock_symbol = stock_symbol;
+        this.stock_data_manageer = stock_data_manager;
+
+    def loadDataFromFile(self):
+        pass
+
+    # Update the file with the information
+    def updateFile(self):
         pass
