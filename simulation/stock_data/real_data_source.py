@@ -1,4 +1,5 @@
-import data_source
+import data_source_interface.StockDataSource
+import real_data_source_util as util
 
 import pandas as pd
 import quandl
@@ -7,8 +8,7 @@ import os
 from datetime import datetime
 
 
-
-class RealStockDataSource(data_source.StockDataSource):
+class RealStockDataSource(StockDataSource):
     def __init__(self):
         pass
     

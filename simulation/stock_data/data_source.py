@@ -1,11 +1,22 @@
-# Interface for stock data sources.
-class StockDataSource:
-    def getStockDataForDate(self, date, symbols):
-        raise NotImplementedError();
+import real_data_source
+import randomized_data_source
+import sinusoid_data_souce
 
-    def getStockDataForDateRange(self, date_range, symbols):
-        raise NotImplementedError();
+__real_data_source = None;
 
-class StockSymbolError(ValueError):
-    pass
-    
+def getRandomizedDataSource(randomized_data_source_config):
+    pass;
+
+def getSinusiodDataSource(sinusoid_data_source_config):
+    pass;
+
+def getRealDataSource():
+    global __real_data_source;
+    if __real_data_source:
+        return __real_data_source;
+
+def getDataSourceFromConfig(data_source_config):
+    pass;
+
+class InvalidDataSourceConfig(ValueError):
+    pass;

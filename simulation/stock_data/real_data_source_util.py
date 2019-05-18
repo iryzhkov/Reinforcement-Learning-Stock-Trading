@@ -5,9 +5,8 @@ import os
 from datetime import datetime
 
 DATE_FORMAT = '%Y-%m-%d'
-
-# Maximum allowed number of quandl requests.
 QUANDL_MAX_REQUESTS_PER_DAY = 50
+
 STORED_DATA_DIRECTORY = 'data'
 STORED_DATA_INFO_FILE = 'data_info'
 
