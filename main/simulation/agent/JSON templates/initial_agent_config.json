@@ -1,0 +1,15 @@
+{'agent_configuration': {
+  'name': '',
+  'id': -1,
+  'stock_symbols': [],
+  'configuration': {
+    'days_back': 0,
+    'nn_configuration': {
+      'number_of_input_parameters': 0,
+      'number_of_output_parameters': 1,
+      'layers': [],
+    },
+  },
+  'future_consideration': 0,
+  'latest_performance': 0,
+}}

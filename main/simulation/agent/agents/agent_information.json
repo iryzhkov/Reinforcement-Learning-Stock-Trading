@@ -1,0 +1,9 @@
+{'agents_information': {
+  'next_available_id': 1,
+  'number_of_active_agents': 4,
+  'active_agents': {
+    1: {
+      'status': 'in_training_session'
+    },
+  },
+}}
