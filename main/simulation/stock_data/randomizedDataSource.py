@@ -1,4 +1,4 @@
-import data_source_interface.StockDataSource
+import dataSourceInterface.StockDataSource
 
 class RandomizedStockDataSource(StockDataSource):
     pass
