@@ -9,13 +9,13 @@ from datetime import datetime
 
 class RealStockDataSource(StockDataSource):
     def prepareDataForDates(self, start_date, end_date, stocks_config):
-        self._addSymbols(symbols);
-        for stock in self.stocks_config:
-            if symbol in self.stock_data:
+        self._addStocks(stocks_config.keys());
+        for stock in self.stocks:
+            if stock in self.stock_data:
                 print("Need to optimize by reducing number of downloaded items");
-                self.stock_data[symbol] = util.tryRequestStockDataForDates(stock, start_date, end_date);
+                self.stock_data[stock] = util.tryRequestStockDataForDates(stock, start_date, end_date);
             else:
-                self.stock_data[symbol] = util.tryRequestStockDataForDates(stock, start_date, end_date);
+                self.stock_data[stock] = util.tryRequestStockDataForDates(stock, start_date, end_date);
 
 
 if __name__ == "__main__":

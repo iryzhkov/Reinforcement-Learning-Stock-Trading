@@ -7,7 +7,7 @@ import math
 # Class for generating sinusoid-like data
 class SinusoidStockDataSource(StockDataSource):
     def prepareDataForDates(self, start_date, end_date, stocks_config):
-        self._addSymbols(stocks_config.keys());
+        self._addStocks(stocks_config.keys());
         day_count = (end_date - start_date).days + 1;
 
         for stock in stocks_config:
@@ -22,14 +22,14 @@ class SinusoidStockDataSource(StockDataSource):
 
 
 if __name__ == "__main__":
-    symbols = ['STOCK_1', 'STOCK_2'];
+    stocks = ['STOCK_1', 'STOCK_2'];
     config_1 = {'period': 60, 'anchor_date': datetime(2015, 1, 1), 'delta': 100, 'magnitude': 20}
     config_2 = {'period': 60, 'anchor_date': datetime(2015, 1, 15), 'delta': 100, 'magnitude': 20}
-    configs = {symbols[0]: config_1, symbols[1]: config_2};
+    configs = {stocks[0]: config_1, stocks[1]: config_2};
 
     start_date = datetime(2016, 1, 1);
     end_date = datetime(2017, 1, 1);
 
     data_source = SinusoidStockDataSource();
     data_source.prepareDataForDates(start_date, end_date, configs);
-    data_source.drawPlotsForDates(start_date, end_date, symbols);
+    data_source.drawPlotsForDates(start_date, end_date, stocks);

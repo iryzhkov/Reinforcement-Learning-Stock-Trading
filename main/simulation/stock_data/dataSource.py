@@ -28,7 +28,7 @@ def getDataSourceFromConfig(data_source_config):
 
 
 if __name__ == '__main__':
-    stocks = ['STOCK_1', 'STOCK_2'];
+    stocks = ['GOOG', 'AMZN'];
     config_1 = {'period': 60, 'anchor_date': datetime(2015, 1, 1), 'delta': 200, 'magnitude': 30}
     config_2 = {'period': 60, 'anchor_date': datetime(2015, 1, 15), 'delta': 200, 'magnitude': 30}
     stocks_config = {stocks[0]: config_1, stocks[1]: config_2};
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     start_date = datetime(2016, 1, 1);
     end_date = datetime(2017, 1, 1);
 
-    data_source_config = {'source_type': 'randomized', 'variance': 0.02, 'child_source': {'source_type': 'sinusoid'}}
+    data_source_config = {'source_type': 'randomized', 'variance': 0.02, 'child_source': {'source_type': 'real'}}
 
     data_source = getDataSourceFromConfig(data_source_config);
     data_source.prepareDataForDates(start_date, end_date, stocks_config);

@@ -12,22 +12,22 @@ class RandomizedStockDataSource(StockDataSource):
         self.data_source = data_source;
         self.variance = variance;
 
-    def prepareDataForDates(self, start_date, end_date, symbols, *argv):
-        self.data_source.prepareDataForDates(start_date, end_date, symbols, *argv);
+    def prepareDataForDates(self, start_date, end_date, stocks):
+        self.data_source.prepareDataForDates(start_date, end_date, stocks);
         day_count = (end_date - start_date).days + 1;
 
-        for symbol in symbols:
+        for stock in stocks:
             d = {};
 
             for date in self.data_source.getAvailableDates():
-                high_value, low_value = self.data_source.stock_data[symbol].loc[date,['High', 'Low']];
+                high_value, low_value = self.data_source.stock_data[stock].loc[date,['High', 'Low']];
 
                 high_value = high_value * (1 + random.uniform(-self.variance, self.variance));
                 low_value = low_value * (1 + random.uniform(-self.variance, self.variance));
 
                 d[date] = [max(high_value, low_value), min(high_value, low_value)];
 
-            self.stock_data[symbol] = pd.DataFrame.from_dict(data=d, orient='index', columns=['High', 'Low']); 
+            self.stock_data[stock] = pd.DataFrame.from_dict(data=d, orient='index', columns=['High', 'Low']); 
 
 
 if __name__ == "__main__":

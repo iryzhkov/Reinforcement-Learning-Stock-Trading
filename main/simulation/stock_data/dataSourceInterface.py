@@ -6,39 +6,39 @@ import matplotlib.pyplot as plt
 class StockDataSource:
     def __init__(self):
         self.stock_data = {};
-        self.symbols = set();
+        self.stocks = set();
 
-    def getStockDataForDate(self, date, symbols):
+    def getStockDataForDate(self, date, stocks):
         result = {}
-        for symbol in symbols:
-            result[symbol] = self.stock_data[symbol].loc[date];
+        for stock in stocks:
+            result[stock] = self.stock_data[stock].loc[date];
         return result
 
-    def getStockDataForNDaysBefore(self, date, number_of_days, symbols):
+    def getStockDataForNDaysBefore(self, date, number_of_days, stocks):
         result = {}
-        for symbol in symbols:
-            end_date_index = self.stock_data[symbol].index.get_loc(date); 
+        for stock in stocks:
+            end_date_index = self.stock_data[stock].index.get_loc(date); 
             start_date_index = end_date_index - number_of_days; 
-            result[symbol] = self.stock_data[symbol].iloc[start_date_index:end_date_index];
+            result[stock] = self.stock_data[stock].iloc[start_date_index:end_date_index];
         return result
 
     def getAvailableDates(self):
-        for symbol in self.symbols:
-            return pd.to_datetime(self.stock_data[symbol].index);
+        for stock in self.stocks:
+            return pd.to_datetime(self.stock_data[stock].index);
 
-    def prepareDataForDates(self, start_date, end_date, symbols):
+    def prepareDataForDates(self, start_date, end_date, stocks_config):
         raise NotImplementedError();
 
-    def drawPlotsForDates(self, start_date, end_date, symbols):
-        fig, axis = plt.subplots(len(symbols), sharex=True);
+    def drawPlotsForDates(self, start_date, end_date, stocks):
+        fig, axis = plt.subplots(len(stocks), sharex=True);
         fig.suptitle("Stock Prices");
-        for index, symbol in enumerate(symbols):
-            plottable_data = self.stock_data[symbol].loc[start_date:end_date];
-            axis[index].set_title(symbol);
+        for index, stock in enumerate(stocks):
+            plottable_data = self.stock_data[stock].loc[start_date:end_date];
+            axis[index].set_title(stock);
             axis[index].plot(plottable_data.index, plottable_data['High'], color='green');
             axis[index].plot(plottable_data.index, plottable_data['Low'], color='red');
         plt.show();
 
-    def _addSymbols(self, symbols):
-        symbols = set(symbols);
-        self.symbols = self.symbols.union(symbols);
+    def _addStocks(self, stocks):
+        stocks = set(stocks);
+        self.stocks = self.stocks.union(stocks);
