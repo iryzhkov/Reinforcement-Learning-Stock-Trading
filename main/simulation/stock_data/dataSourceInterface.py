@@ -24,16 +24,20 @@ class StockDataSource:
 
     def getAvailableDates(self):
         for symbol in self.symbols:
-            return [t.date() for t in self.stock_data[symbol].index];
+            return pd.to_datetime(self.stock_data[symbol].index);
 
     def prepareDataForDates(self, start_date, end_date, symbols):
         raise NotImplementedError();
 
     def drawPlotsForDates(self, start_date, end_date, symbols):
-        for symbol in symbols:
+        fig, axis = plt.subplots(len(symbols), sharex=True);
+        fig.suptitle("Stock Prices");
+        for index, symbol in enumerate(symbols):
             plottable_data = self.stock_data[symbol].loc[start_date:end_date];
-            plottable_data.plot(y=['High', 'Low']);
-
+            axis[index].set_title(symbol);
+            axis[index].plot(plottable_data.index, plottable_data['High'], color='green');
+            axis[index].plot(plottable_data.index, plottable_data['Low'], color='red');
+        plt.show();
 
     def _addSymbols(self, symbols):
         symbols = set(symbols);

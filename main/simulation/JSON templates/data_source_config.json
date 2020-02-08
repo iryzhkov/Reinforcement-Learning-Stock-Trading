@@ -1,0 +1,10 @@
+{'source_type': 'randomized',
+ 'variance': 0.05,
+ 'child_source': {
+  'source_type': 'sinusoid'
+ }
+}
+
+{'source_type': 'real'}
+
+{'source_type': 'sinusoid'}
