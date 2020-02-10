@@ -1,5 +1,5 @@
-from stockTrading.simulation.stockData.dataSourceInterface import StockDataSource
-import stockTrading.simulation.stockData.realDataSourceUtil as Util
+from package.simulation.stockData.dataSourceInterface import StockDataSource
+import package.simulation.stockData.realDataSourceUtil as Util
 
 from datetime import datetime
 

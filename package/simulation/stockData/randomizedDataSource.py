@@ -1,5 +1,5 @@
-from stockTrading.simulation.stockData.dataSourceInterface import StockDataSource
-from stockTrading.simulation.stockData.sinusoidDataSource import SinusoidStockDataSource
+from package.simulation.stockData.dataSourceInterface import StockDataSource
+from package.simulation.stockData.sinusoidDataSource import SinusoidStockDataSource
 
 from datetime import datetime
 import pandas as pd
