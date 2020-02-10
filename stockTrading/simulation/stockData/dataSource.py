@@ -1,6 +1,6 @@
-from main.simulation.stock_data.realDataSource import RealStockDataSource
-from main.simulation.stock_data.randomizedDataSource import RandomizedStockDataSource
-from main.simulation.stock_data.sinusoidDataSource import SinusoidStockDataSource
+from stockTrading.simulation.stockData.realDataSource import RealStockDataSource
+from stockTrading.simulation.stockData.randomizedDataSource import RandomizedStockDataSource
+from stockTrading.simulation.stockData.sinusoidDataSource import SinusoidStockDataSource
 
 from datetime import datetime
 

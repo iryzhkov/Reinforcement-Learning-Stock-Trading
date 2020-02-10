@@ -1,7 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Base Class for StockDataSource type classes 
+
+# Base Class for StockDataSource type classes
 class StockDataSource:
     def __init__(self):
         self.stock_data = {}
@@ -29,7 +30,7 @@ class StockDataSource:
         raise NotImplementedError()
 
     def drawPlotsForDates(self, start_date, end_date, stocks):
-        fig, axis = plt.subplots(len(stocks), sharex=True)
+        fig, axis = plt.subplots(len(stocks), sharex='col')
         fig.suptitle("Stock Prices")
         for index, stock in enumerate(stocks):
             plottable_data = self.stock_data[stock].loc[start_date:end_date]

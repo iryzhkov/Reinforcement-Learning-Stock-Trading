@@ -1,4 +1,4 @@
-from main.simulation.stock_data.dataSourceInterface import StockDataSource
+from stockTrading.simulation.stockData.dataSourceInterface import StockDataSource
 
 from datetime import datetime, timedelta
 import pandas as pd

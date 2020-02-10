@@ -5,9 +5,7 @@ setup(
     version="0.0.1",
     author="Igor Ryzhkov",
     author_email="igor.o.ryzhkov@gmail.com",
-    description="A small example package",
-    long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
-    packages=[],
+    description="Stock trading with ML elements",
+    url="https://github.com/iryzhkov/Reinforced-Learning-Stock-Trading",
     python_requires='>=3.6',
 )
