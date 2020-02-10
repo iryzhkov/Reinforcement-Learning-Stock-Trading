@@ -4,19 +4,16 @@ Using historical stock data, train ML model to buy and sell stocks for fun (prob
 
 Stages:
  - [in progress] Structure out the code
- - [in progress] Draw lots and lots of diagrams
- - [not started] Get internet stock data to work
- - [not started] Get generated stock data to work
+ - [finished] Get internet stock data to work
+ - [finished] Get generated stock data to work
+ - [not started] Add real data offline storage
  - [not started] Figure out tensorFlow for this project
  - [not started] Figure out math for this project
  - [not started] Figure out simulation and simple training
  - [not started] Figure out simulation graph output
  - [not started] Do proof of concept using generated stock data
- - [not started] Blogpost on the web-page
  - [not started] Figure out training with randomly generated agents 
  - [not started] Start training ml agents
  - [not started] While training ml agents, simulate them in real world
- - [not started] Another blogpost on the web-page
  - [not started] If they work out, have some profit
  - [not started] Try moving everything to the cloud, and ramp-up the nn complexity
- - [not started] Another blogpost

@@ -1,6 +1,0 @@
-{'training_configuration': {
-  'balance': 1000.00,
-  'stocks': {
-    'GOOG': 19,
-  },
-}}
