@@ -1,3 +1,6 @@
 # Interface for agent
-class Agent:
-  pass
+
+
+class BaseAgent:
+    def __init__(self):
+        pass

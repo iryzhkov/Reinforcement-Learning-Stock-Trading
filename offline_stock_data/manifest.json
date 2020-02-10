@@ -1,0 +1,14 @@
+{"downloaded_stocks":  {
+  "GOOG": {
+    "earliest_date": 0,
+    "latest_date": 0
+  },
+  "AMZN": {
+    "earliest_date": 0,
+    "latest_date": 0
+  },
+  "AAPL": {
+    "earliest_date": 0,
+    "latest_date": 0
+  }
+}}

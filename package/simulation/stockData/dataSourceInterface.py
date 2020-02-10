@@ -1,44 +1,106 @@
-import pandas as pd
+"""Base class for stock data sources. Implements basic getters.
+"""
+
 import matplotlib.pyplot as plt
+import pandas as pd
+from datetime import datetime
 
 
-# Base Class for StockDataSource type classes
 class StockDataSource:
     def __init__(self):
+        """Initializer for DataSource. Sets up dict for stock_data and set for stocks.
+        """
         self.stock_data = {}
         self.stocks = set()
 
-    def getStockDataForDate(self, date, stocks):
+    def getStockDataForDate(self, date: datetime, stocks: list):
+        """Returns stock data at provided date for provided stocks.
+
+        Args:
+            date (datetime): The date, for which to get the stock data.
+            stocks (list of str): List of stock names, for which to get the stock data.
+
+        Returns:
+            A dict mapping stock names to their prices at that specific date. For example:
+            {'STOCK_123': {'High': 1001, 'Low': 1000}}
+        """
         result = {}
         for stock in stocks:
             result[stock] = self.stock_data[stock].loc[date]
         return result
 
-    def getStockDataForNDaysBefore(self, date, number_of_days, stocks):
+    def getStockDataForNDaysBefore(self, date: datetime, number_of_days: int, stocks: list):
+        """Returns stock data for number_of_days prior to the given date for provided stocks.
+
+        Args:
+            date (datetime): The end date (result does not have data for this date).
+            number_of_days (int): Number of days, for which to get the stock data.
+            stocks (list of str): List of stock names, for which to get the stock data.
+
+        Returns:
+            A dict mapping stock names to their prices at that specific date range. For example:
+            {'STOCK_123': [{'High': 1001, 'Low': 1000}, {'High': 1002, 'Low': 1001}]}
+
+        Raises:
+            LookUpError: Days requested are outside of the prepared data.
+        """
         result = {}
         for stock in stocks:
             end_date_index = self.stock_data[stock].index.get_loc(date)
             start_date_index = end_date_index - number_of_days
+            if start_date_index < 0:
+                raise LookupError('Trying to access data outside of the prepared dates.')
             result[stock] = self.stock_data[stock].iloc[start_date_index:end_date_index]
         return result
 
     def getAvailableDates(self):
+        """Returns available dates for this DataSource
+
+        Returns:
+            List of datetime dates, that are available for querying.
+        """
         for stock in self.stocks:
             return pd.to_datetime(self.stock_data[stock].index)
 
-    def prepareDataForDates(self, start_date, end_date, stocks_config):
+    def prepareDataForDates(self, start_date: datetime, end_date: datetime, stocks_config: list):
+        """Loads/Generates stock data for given date range.
+
+        This is the main function that must be implemented by each new stock data source.
+
+        Args:
+            start_date (datetime): Date range start.
+            end_date (datetime): Date range end.
+            stocks_config (dict/list): List of stocks to get the data for.
+
+        Raises:
+            NotImplementedError: base class does not support this method.
+        """
         raise NotImplementedError()
 
-    def drawPlotsForDates(self, start_date, end_date, stocks):
+    def drawPlotsForDates(self, start_date: datetime, end_date: datetime, stocks: list):
+        """Draws plots for the stock data generated in the given date range.
+
+        Uses matplotlib to plot relevant stock data.
+
+        Args:
+            start_date (datetime): Date range start.
+            end_date (datetime): Date range end.
+            stocks (list of str): Which stocks plot
+        """
         fig, axis = plt.subplots(len(stocks), sharex='col')
         fig.suptitle("Stock Prices")
         for index, stock in enumerate(stocks):
-            plottable_data = self.stock_data[stock].loc[start_date:end_date]
+            data_to_plot = self.stock_data[stock].loc[start_date:end_date]
             axis[index].set_title(stock)
-            axis[index].plot(plottable_data.index, plottable_data['High'], color='green')
-            axis[index].plot(plottable_data.index, plottable_data['Low'], color='red')
+            axis[index].plot(data_to_plot.index, data_to_plot['High'], color='green')
+            axis[index].plot(data_to_plot.index, data_to_plot['Low'], color='red')
         plt.show()
 
-    def _addStocks(self, stocks):
+    def _addStocks(self, stocks: list):
+        """Adds stock to the internal set of stocks.
+
+        Args:
+            stocks (list of str): new stocks to add.
+        """
         stocks = set(stocks)
         self.stocks = self.stocks.union(stocks)
