@@ -1,22 +1,35 @@
-from package.simulation.stockData.dataSourceInterface import StockDataSource
-from package.simulation.stockData.sinusoidDataSource import SinusoidStockDataSource
+"""Randomized Stock Data Source
+"""
 
-from datetime import datetime
+from package.simulation.stockData.baseStockDataSource import StockDataSource
+
 import pandas as pd
 import random
+from datetime import datetime
 
 
 # Class for adding randomization element on top of a regular data source 
 class RandomizedStockDataSource(StockDataSource):
-    def __init__(self, data_source, variance=0.05):
+    def __init__(self, data_source: StockDataSource, variance=0.05):
+        """Initializes Randomized Stock Data Source.
+
+        Args:
+            data_source (StockDataSource): data source to randomize.
+            variance (float): variance to use for the randomization.
+        """
         super(RandomizedStockDataSource, self).__init__()
         self.data_source = data_source
         self.variance = variance
 
-    def prepareDataForDates(self, start_date, end_date, stocks):
-        self.data_source.prepareDataForDates(start_date, end_date, stocks)
-        day_count = (end_date - start_date).days + 1
+    def prepareDataForDates(self, start_date: datetime, end_date: datetime, stocks):
+        """Generates random data from the data source used for the initialization.
 
+        Args:
+            start_date (datetime): Start of the date range
+            end_date (datetime): End of the date range
+            stocks (list or dict): list of stocks use.
+        """
+        self.data_source.prepareDataForDates(start_date, end_date, stocks)
         for stock in stocks:
             d = {}
 
@@ -32,15 +45,4 @@ class RandomizedStockDataSource(StockDataSource):
 
 
 if __name__ == "__main__":
-    stocks = ['STOCK_1', 'STOCK_2']
-    config_1 = {'period': 60, 'anchor_date': datetime(2015, 1, 1), 'delta': 100, 'magnitude': 20}
-    config_2 = {'period': 60, 'anchor_date': datetime(2015, 1, 15), 'delta': 100, 'magnitude': 20}
-    stocks_config = {stocks[0]: config_1, stocks[1]: config_2}
-
-    start_date = datetime(2016, 1, 1)
-    end_date = datetime(2016, 6, 1)
-
-    data_source = RandomizedStockDataSource(SinusoidStockDataSource())
-
-    data_source.prepareDataForDates(start_date, end_date, stocks_config)
-    data_source.drawPlotsForDates(start_date, end_date, stocks_config)
+    pass

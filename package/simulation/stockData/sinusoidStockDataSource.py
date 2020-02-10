@@ -1,4 +1,7 @@
-from package.simulation.stockData.dataSourceInterface import StockDataSource
+"""Sinusoid Stock Data Source.
+"""
+
+from package.simulation.stockData.baseStockDataSource import StockDataSource
 
 from datetime import datetime, timedelta
 import pandas as pd
@@ -8,7 +11,14 @@ import math
 # Class for generating sinusoid-like data
 class SinusoidStockDataSource(StockDataSource):
     def prepareDataForDates(self, start_date, end_date, stocks_config):
-        self._addStocks(stocks_config.keys())
+        """Generates sinusoid data from stock_config.
+
+        Args:
+            start_date (datetime): Date range start for the preparation.
+            end_date (datetime): Date range end for the preparation.
+            stocks_config (dict): Stock configuration. For example:
+                {'STOCK_1': {'anchor_date': datetime(2016, 1, 1), 'magnitude': 20, 'period': 10, 'delta': 10}}
+        """
         day_count = (end_date - start_date).days + 1
 
         for stock in stocks_config:
@@ -23,14 +33,4 @@ class SinusoidStockDataSource(StockDataSource):
 
 
 if __name__ == "__main__":
-    stocks = ['STOCK_1', 'STOCK_2']
-    config_1 = {'period': 60, 'anchor_date': datetime(2015, 1, 1), 'delta': 100, 'magnitude': 20}
-    config_2 = {'period': 60, 'anchor_date': datetime(2015, 1, 15), 'delta': 100, 'magnitude': 20}
-    configs = {stocks[0]: config_1, stocks[1]: config_2}
-
-    start_date = datetime(2016, 1, 1)
-    end_date = datetime(2017, 1, 1)
-
-    data_source = SinusoidStockDataSource()
-    data_source.prepareDataForDates(start_date, end_date, configs)
-    data_source.drawPlotsForDates(start_date, end_date, stocks)
+    pass

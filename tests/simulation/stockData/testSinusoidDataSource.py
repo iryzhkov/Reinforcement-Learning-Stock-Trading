@@ -1,4 +1,4 @@
-from package.simulation.stockData.sinusoidDataSource import SinusoidStockDataSource
+from package.simulation.stockData.sinusoidStockDataSource import SinusoidStockDataSource
 
 import unittest
 from datetime import datetime

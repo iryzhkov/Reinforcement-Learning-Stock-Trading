@@ -1,14 +1,10 @@
-{"downloaded_stocks":  {
-  "GOOG": {
-    "earliest_date": 0,
-    "latest_date": 0
-  },
-  "AMZN": {
-    "earliest_date": 0,
-    "latest_date": 0
-  },
-  "AAPL": {
-    "earliest_date": 0,
-    "latest_date": 0
-  }
-}}
+{
+    "AMZN": {
+        "first_available_date": "01 Dec 2015",
+        "last_available_date": "01 Mar 2016"
+    },
+    "GOOG": {
+        "first_available_date": "01 Dec 2015",
+        "last_available_date": "01 Mar 2016"
+    }
+}

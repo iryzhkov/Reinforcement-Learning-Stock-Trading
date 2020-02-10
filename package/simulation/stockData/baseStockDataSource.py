@@ -11,7 +11,6 @@ class StockDataSource:
         """Initializer for DataSource. Sets up dict for stock_data and set for stocks.
         """
         self.stock_data = {}
-        self.stocks = set()
 
     def getStockDataForDate(self, date: datetime, stocks: list):
         """Returns stock data at provided date for provided stocks.
@@ -59,7 +58,7 @@ class StockDataSource:
         Returns:
             List of datetime dates, that are available for querying.
         """
-        for stock in self.stocks:
+        for stock in self.stock_data:
             return pd.to_datetime(self.stock_data[stock].index)
 
     def prepareDataForDates(self, start_date: datetime, end_date: datetime, stocks_config: list):
@@ -95,12 +94,3 @@ class StockDataSource:
             axis[index].plot(data_to_plot.index, data_to_plot['High'], color='green')
             axis[index].plot(data_to_plot.index, data_to_plot['Low'], color='red')
         plt.show()
-
-    def _addStocks(self, stocks: list):
-        """Adds stock to the internal set of stocks.
-
-        Args:
-            stocks (list of str): new stocks to add.
-        """
-        stocks = set(stocks)
-        self.stocks = self.stocks.union(stocks)
