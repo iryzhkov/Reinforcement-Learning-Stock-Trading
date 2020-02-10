@@ -11,6 +11,7 @@
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/package" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/offline_stock_data" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/saved_agents" type="java-resource" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

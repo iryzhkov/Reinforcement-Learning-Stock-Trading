@@ -1,3 +1,8 @@
-# The ML Agent for buying and selling stocks
-class MLAgent:
-  pass
+""" Reinforcement Learning based Agent.
+"""
+
+import package.simulation.agent.baseAgent as BaseAgent
+
+
+class MLAgent(BaseAgent.BaseAgent):
+    pass

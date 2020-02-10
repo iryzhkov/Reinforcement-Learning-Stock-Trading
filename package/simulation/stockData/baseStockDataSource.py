@@ -12,21 +12,18 @@ class StockDataSource:
         """
         self.stock_data = {}
 
-    def getStockDataForDate(self, date: datetime, stocks: list):
-        """Returns stock data at provided date for provided stocks.
+    def getStockDataForDate(self, date: datetime, stock: list):
+        """Returns stock data at provided date for provided stock.
 
         Args:
             date (datetime): The date, for which to get the stock data.
-            stocks (list of str): List of stock names, for which to get the stock data.
+            stock (str): Stock, for which to get the stock data.
 
         Returns:
-            A dict mapping stock names to their prices at that specific date. For example:
-            {'STOCK_123': {'High': 1001, 'Low': 1000}}
+            A dict with prices for stock at that specific date. For example:
+            {'High': 1001, 'Low': 1000}
         """
-        result = {}
-        for stock in stocks:
-            result[stock] = self.stock_data[stock].loc[date]
-        return result
+        return self.stock_data[stock].loc[date]
 
     def getStockDataForNDaysBefore(self, date: datetime, number_of_days: int, stocks: list):
         """Returns stock data for number_of_days prior to the given date for provided stocks.
