@@ -4,3 +4,5 @@
 
 *.idea*
 *.pyc
+/.idea/
+/offline_stock_data/*
