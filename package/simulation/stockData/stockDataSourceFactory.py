@@ -9,7 +9,7 @@ from package.simulation.stockData.sinusoidStockDataSource import SinusoidStockDa
 _real_data_source = None
 
 
-def getRandomizedDataSource(config: dict):
+def getRandomizedDataSourceFromConfig(config: dict):
     """Creates randomized data source.
 
     Args:
@@ -57,7 +57,7 @@ def getDataSourceFromConfig(data_source_config: dict):
     """
     if data_source_config['source_type'] == 'real': return getRealDataSource();
     elif data_source_config['source_type'] == 'sinusoid': return getSinusoidDataSource();
-    elif data_source_config['source_type'] == 'randomized': return getRandomizedDataSource(data_source_config);
+    elif data_source_config['source_type'] == 'randomized': return getRandomizedDataSourceFromConfig(data_source_config);
 
 
 if __name__ == '__main__':

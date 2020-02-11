@@ -3,7 +3,7 @@
 
 from package.simulation.stockData.baseStockDataSource import StockDataSource
 from package.simulation.agent.baseAgent import BaseAgent
-from package.simulation.stockData.stockDataSource import getDataSourceFromConfig
+from package.simulation.stockData.stockDataSourceFactory import getDataSourceFromConfig
 
 import pandas as pd
 from datetime import datetime, timedelta
@@ -37,6 +37,7 @@ class Session:
         self.balance_history = [self.balance]
         self.net_worth_history = [self._getNetWorthForDate(day_zero_date)]
         self.action_history = []
+        self.day_to_day_growth = [0]
         self.stock_history = [[self.stocks_owned[stock] for stock in self.stocks]]
 
     def runSession(self):
@@ -53,8 +54,8 @@ class Session:
             self._executeAction(date, agent_action)
             self._addRecordsForDate(date, agent_action)
 
-        self.records = pd.DataFrame(list(zip(self.balance_history, self.net_worth_history)),
-                                    index=self.records_indices, columns=['Balance', 'Net Worth'])
+        self.records = pd.DataFrame(list(zip(self.balance_history, self.net_worth_history, self.day_to_day_growth)),
+                                    index=self.records_indices, columns=['Balance', 'Net Worth', 'Day to Day Growth'])
         self.action_history = pd.DataFrame(self.action_history,
                                            index=self.records_indices[1:], columns=self.stocks)
         self.stock_history = pd.DataFrame(self.stock_history, index=self.records_indices, columns=self.stocks)
@@ -128,6 +129,7 @@ class Session:
         self.records_indices.append(date)
         self.balance_history.append(self.balance)
         self.net_worth_history.append(self._getNetWorthForDate(date))
+        self.day_to_day_growth.append((self.net_worth_history[-1] / self.net_worth_history[-2] - 1))
         self.stock_history += [[self.stocks_owned[stock] for stock in self.stocks]]
 
     def _getNetWorthForDate(self, date: datetime):
