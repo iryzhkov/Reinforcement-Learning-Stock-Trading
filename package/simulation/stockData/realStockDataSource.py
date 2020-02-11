@@ -68,10 +68,4 @@ class RealStockDataSource(StockDataSource):
 
 
 if __name__ == "__main__":
-    start = datetime(2015, 12, 1)
-    end = datetime(2016, 3, 1)
-    stocks = ['GOOG', 'AMZN']
-
-    data_source = RealStockDataSource()
-    data_source.prepareDataForDates(start, end, stocks)
-    print(data_source.stock_data['GOOG'])
+    pass

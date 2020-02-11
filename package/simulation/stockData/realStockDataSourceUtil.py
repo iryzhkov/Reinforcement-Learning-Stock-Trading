@@ -103,7 +103,7 @@ def getOfflineStockDataFor(stock: str):
     Args:
         stock (str): Stock for which to retrieve the data.
     """
-    return pd.read_csv(_stockDataFilePath(stock))
+    return pd.read_csv(_stockDataFilePath(stock), index_col=0)
 
 
 def updateOfflineStockDataFor(new_stock_data: pd.DataFrame, stock: str):
@@ -113,7 +113,7 @@ def updateOfflineStockDataFor(new_stock_data: pd.DataFrame, stock: str):
         new_stock_data (pd.DataFrame): New stock data to store
         stock (str): Stock name
     """
-    new_stock_data.to_csv(_stockDataFilePath(stock))
+    new_stock_data.to_csv(_stockDataFilePath(stock), date_format='%Y-%m-%d')
 
 
 def tryRequestStockDataForDates(start_date, end_date, stock):
