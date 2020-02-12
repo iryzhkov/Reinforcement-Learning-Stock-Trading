@@ -1,8 +1,10 @@
 """Session class used to run a single simulation of agent's actions.
 """
 
-from package.simulation.stockData.baseStockDataSource import StockDataSource
+import package.simulation.agent.agentDataUtil as AgentDataUtil
+
 from package.simulation.agent.baseAgent import BaseAgent
+from package.simulation.stockData.baseStockDataSource import StockDataSource
 from package.simulation.stockData.stockDataSourceFactory import getDataSourceFromConfig
 
 import pandas as pd
@@ -35,9 +37,8 @@ class Session:
 
         self.records_indices = [day_zero_date]
         self.balance_history = [self.balance]
-        self.net_worth_history = [self._getNetWorthForDate(day_zero_date)]
+        self.net_worth_history = []
         self.action_history = []
-        self.day_to_day_growth = [0]
         self.stock_history = [[self.stocks_owned[stock] for stock in self.stocks]]
 
     def runSession(self):
@@ -45,44 +46,23 @@ class Session:
         """
         def dateInRange(date):
             return self.start_date <= date <= self.end_date
-        available_dates = filter(dateInRange, self.stock_data_source.getAvailableDates())
+        available_dates = list(filter(dateInRange, self.stock_data_source.getAvailableDates()))
+        self.net_worth_history = [self._getNetWorthForDate(available_dates[0])]
 
         for date in available_dates:
-            possible_actions = self._generatePossibleActions(date)
-            agent_input = self._generateAgentInputForDate(date)
-            agent_action = self.agent.pickAction(agent_input, possible_actions)
-            self._executeAction(date, agent_action)
+            possible_actions = AgentDataUtil.generatePossibleActions(self.stock_data_source, self.stocks,
+                                                                     date, self.balance, self.stocks_owned)
+            state_data = AgentDataUtil.generateStateInputForAgent(self.stock_data_source, self.agent,
+                                                                  date, self.balance, self.stocks_owned)
+            agent_action = self.agent.pickAction(state_data, possible_actions)
             self._addRecordsForDate(date, agent_action)
+            self._executeAction(date, agent_action)
 
-        self.records = pd.DataFrame(list(zip(self.balance_history, self.net_worth_history, self.day_to_day_growth)),
-                                    index=self.records_indices, columns=['Balance', 'Net Worth', 'Day to Day Growth'])
+        self.records = pd.DataFrame(list(zip(self.balance_history, self.net_worth_history)),
+                                    index=self.records_indices, columns=['Balance', 'Net Worth'])
         self.action_history = pd.DataFrame(self.action_history,
                                            index=self.records_indices[1:], columns=self.stocks)
         self.stock_history = pd.DataFrame(self.stock_history, index=self.records_indices, columns=self.stocks)
-
-    def _generatePossibleActions(self, date: datetime):
-        """Generates a list of possible actions for agent for given date.
-
-        Args:
-            date (datetime): The date for which to generate list of actions.
-
-        Returns
-            A list of possible actions.
-        """
-        possible_actions = [[0] * len(self.stocks)]
-
-        for index, stock in enumerate(self.stocks):
-            if self.stocks_owned[stock] > 0:
-                sell_action = [0] * len(self.stocks)
-                sell_action[index] = -1
-                possible_actions += [sell_action]
-
-            if self.stock_data_source.getStockDataForDate(date, stock)['High'] < self.balance:
-                buy_action = [0] * len(self.stocks)
-                buy_action[index] = 1
-                possible_actions += [buy_action]
-
-        return possible_actions
 
     def _executeAction(self, date: datetime, agent_action: list):
         """Executes action during the date
@@ -91,33 +71,19 @@ class Session:
             date (datetime): Date for which to execute action.
             agent_action (list of int): Action that the agent selected.
         """
-        self.action_history += [[0] * len(self.stocks)]
         for index, action in enumerate(agent_action):
             stock = self.stocks[index]
             low_price = self.stock_data_source.getStockDataForDate(date, stock)['Low']
             high_price = self.stock_data_source.getStockDataForDate(date, stock)['High']
 
             if action == -1:
-                self.action_history[-1][index] = -self.stocks_owned[stock]
                 self.balance += self.stocks_owned[stock] * low_price
                 self.stocks_owned[stock] = 0
 
             elif action == 1:
                 num_stocks_purchased = self.balance // high_price
-                self.action_history[-1][index] = num_stocks_purchased
                 self.stocks_owned[stock] += num_stocks_purchased
                 self.balance -= num_stocks_purchased * high_price
-
-    def _generateAgentInputForDate(self, date):
-        """Generates input to use for the agent.
-
-        Args:
-            date (datetime): The date for which to generate the input.
-
-        Returns:
-            A dict with data used for agent input.
-        """
-        return {}
 
     def _addRecordsForDate(self, date: datetime, action_taken: list):
         """Adds records of the date to the session records.
@@ -129,8 +95,8 @@ class Session:
         self.records_indices.append(date)
         self.balance_history.append(self.balance)
         self.net_worth_history.append(self._getNetWorthForDate(date))
-        self.day_to_day_growth.append((self.net_worth_history[-1] / self.net_worth_history[-2] - 1))
         self.stock_history += [[self.stocks_owned[stock] for stock in self.stocks]]
+        self.action_history += [action_taken]
 
     def _getNetWorthForDate(self, date: datetime):
         """Calculates Net Worth for the given date.

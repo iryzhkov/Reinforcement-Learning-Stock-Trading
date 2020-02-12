@@ -33,11 +33,11 @@ class Simulation:
     def drawPerformancePlot(self):
         """Draws performance plots for the session
         """
-        num_figures = len(self.stocks) + 2
+        num_figures = len(self.stocks) + 1
         fig, axis = plt.subplots(num_figures, sharex='col', gridspec_kw={'hspace': 0.03})
 
         # Drawing plots with stock data
-        for index, stock in enumerate(stocks):
+        for index, stock in enumerate(self.stocks):
             data_to_plot = self.stock_data_source.stock_data[stock].loc[self.start_date:self.end_date]
             axis[index].set_ylabel(stock)
             axis[index].plot(data_to_plot.index, data_to_plot['High'], 'c-')
@@ -62,15 +62,6 @@ class Simulation:
         data_to_plot = self.session.records
         axis[index].plot(data_to_plot.index, data_to_plot['Net Worth'], 'm-')
         axis[index].set_ylabel('Net Worth')
-        axis[index].grid(which='both', color='k', linestyle='--')
-
-        # Adding Day2Day Growth plot
-        index += 1
-        data_to_plot = self.session.records
-        axis[index].plot(data_to_plot.index, data_to_plot['Day to Day Growth'], 'b-')
-        axis[index].set_ylabel('Day to Day Growth')
-        axis[index].axhline(y=0, alpha=0.3, linestyle='--', color='k')
-        axis[index].axhline(y=min(data_to_plot['Day to Day Growth']), linestyle='--', color='m')
         axis[index].grid(which='both', color='k', linestyle='--')
 
         plt.show()
