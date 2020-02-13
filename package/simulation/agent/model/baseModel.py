@@ -1,33 +1,45 @@
 """Base class for the q-learning models.
 """
 
+import pandas as pd
+
 
 class BaseModel:
-    def __init__(self):
-        pass
+    def __init__(self, config: dict):
+        """Initializer for the models.
 
-    def expectedReward(self, state, action):
+        Args:
+            config (dict): Model config
+        """
+        self.model = None
+        self.trained = False
+        self.num_epochs = config['epoch_number']
+        self.batch_size = config['batch_size']
+
+    def expectedReward(self, state_action_dataframe: pd.DataFrame):
         """Returns expected outcome based on the model.
 
         Returns the modeled action-state expected value.
 
         Args:
-            state (list of float): a list of numbers, representing current state.
-            action (list of int): a list of integers, representing possible action.
+            state_action_dataframe (dp.DataFrame): A state_action dataframe containing all state-action values.
 
         Returns:
-            A float, representing expected reward for the action.
+            A float, representing expected reward for the action in the state.
         """
-        raise NotImplementedError("BaseModel class does not support any operations with model.")
+        if self.model is None or not self.trained:
+            return [0] * len(state_action_dataframe)
+        else:
+            return list(self.model.predict(state_action_dataframe))
 
-    def train(self, state, action, reward, next_state, next_optimal_action):
+    def train(self, state_action_dataframe, expected_values_dataframe):
         """Integrates the feedback into the model.
 
         Args:
-            state (list of float): the state, during which, the action was taken.
-            action (list of int): the action that was taken.
-            reward (float): the reward for the action.
-            next_state (list of float): the result state of the action
-            next_optimal_action (list of int): the optimal action at the next_state
+            state_action_dataframe (pd.DataFrame): dataframe with state-action values to train on
+            expected_values_dataframe (pd.DataFrame): dataframe with expected reward values for the state-action values
         """
-        raise NotImplementedError("BaseModel class does not support any operations with model.")
+        if self.model is not None:
+            for i in range(self.num_epochs):
+                self.model.partial_fit(state_action_dataframe, expected_values_dataframe)
+            self.trained = True

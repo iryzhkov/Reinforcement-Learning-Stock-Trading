@@ -1,7 +1,8 @@
 """Utils used by Real Stock Data Source.
 """
 
-import json
+import package.util.json as JSON
+
 import quandl
 import pandas as pd
 
@@ -16,37 +17,6 @@ offlineStockDataManifestPath = join(offlineStockDataPath, 'manifest.json')
 
 dropColumns = ['Open', 'Close', 'Volume', 'Ex-Dividend', 'Split Ratio',
                'Adj. Open', 'Adj. High', 'Adj. Low', 'Adj. Close', 'Adj. Volume']
-
-dateFormat = '%d %b %Y'
-
-
-def _dateToStr(date):
-    """Converts datetime to str.
-
-    Args:
-        date (datetime): Date to convert.
-
-    Returns:
-        A string representation of the date.
-    """
-    return date.strftime(dateFormat)
-
-
-def _dateHook(json_dict):
-    """Converts str to datetime during json load.
-
-    Args:
-        json_dict (dict): Manifest dict.
-
-    Returns:
-        A dict with dates in the datetime class.
-    """
-    for key, value in json_dict.items():
-        if key.endswith('date'):
-            json_dict[key] = datetime.strptime(value, dateFormat)
-        else:
-            pass
-    return json_dict
 
 
 def getOfflineStockDataManifest():
@@ -65,18 +35,18 @@ def getOfflineStockDataManifest():
     """
     if exists(offlineStockDataManifestPath):
         with open(offlineStockDataManifestPath) as manifest_file:
-            return json.load(manifest_file, object_hook=_dateHook)
+            return JSON.openJson(manifest_file)
     else:
         manifest = {}
         updateOfflineStockDataManifest(manifest)
         return manifest
 
 
-def updateOfflineStockDataManifest(newManifest: dict):
+def updateOfflineStockDataManifest(new_manifest: dict):
     """Updates the offline stock data manifest using newManifest.
 
     Args:
-        newManifest (dict): New offline stock data manifest. For example:
+        new_manifest (dict): New offline stock data manifest. For example:
             {'STOCK_1':
                 {'first_available_date': datetime(2016, 1, 1),
                  'last_available_date': datetime(2017, 2, 28)},
@@ -84,8 +54,8 @@ def updateOfflineStockDataManifest(newManifest: dict):
                 {'first_available_date': datetime(2014, 2, 4),
                  'last_available_date': datetime(2016, 6, 15)}}
     """
-    with open(offlineStockDataManifestPath, 'w+') as manifestFile:
-        json.dump(newManifest, manifestFile, indent=4, sort_keys=True, default=_dateToStr)
+    with open(offlineStockDataManifestPath, 'w+') as manifest_file:
+        JSON.writeJson(manifest_file, new_manifest)
 
 
 def _stockDataFilePath(stock: str):
@@ -113,7 +83,7 @@ def updateOfflineStockDataFor(new_stock_data: pd.DataFrame, stock: str):
         new_stock_data (pd.DataFrame): New stock data to store
         stock (str): Stock name
     """
-    new_stock_data.to_csv(_stockDataFilePath(stock), date_format='%Y-%m-%d')
+    new_stock_data.to_csv(_stockDataFilePath(stock))
 
 
 def tryRequestStockDataForDates(start_date, end_date, stock):

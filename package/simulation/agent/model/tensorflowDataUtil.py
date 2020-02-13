@@ -4,7 +4,8 @@ import tensorflow as tf
 import pandas as pd
 
 
-def generateInputFunction(input_df: pd.DataFrame, expected_output_df=None, num_epochs=1, shuffle=True, batch_size=32):
+def generateTrainingInputFunction(input_df: pd.DataFrame, expected_output_df=None,
+                                  num_epochs=5, shuffle=True, batch_size=32):
     """Generates input function for the tensorflow models.
 
     Args:
@@ -26,3 +27,14 @@ def generateInputFunction(input_df: pd.DataFrame, expected_output_df=None, num_e
         ds = dataset.batch(batch_size).repeat(num_epochs)
         return ds
     return input_function
+
+
+def generatePredictionInputFunction(input_df: pd.DataFrame):
+    """Generates input function for the tensorflow models.
+
+    Args:
+        input_df (pd.DataFrame):
+
+    Returns:
+    """
+    return generateTrainingInputFunction(input_df, num_epochs=1)

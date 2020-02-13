@@ -6,24 +6,38 @@ from package.simulation.agent.baseAgent import BaseAgent
 from package.simulation.stockData.stockDataSourceFactory import getDataSourceFromConfig
 from package.simulation.session import Session
 
+import logging
 import matplotlib.pyplot as plt
 from datetime import datetime
 
 
 class Simulation:
-    def __init__(self, stock_data_source: StockDataSource, agent: BaseAgent, session_config: dict):
+    def __init__(self, agent: BaseAgent, simulation_config: dict):
         """Initializer for the Simulation class.
 
         Args:
             stock_data_source (StockDataSource): Stock data source used for this simulation.
             agent (BaseAgent): Agent used for this session.
-            session_config (dict): Configuration for the session. Example:
+            simulation_config (dict): Configuration for the session. Example:
         """
-        self.session = Session(stock_data_source, agent, session_config)
-        self.stock_data_source = stock_data_source
-        self.stocks = session_config['stocks']
-        self.start_date = session_config['start_date']
-        self.end_date = session_config['end_date']
+
+        self.stocks = agent.stocks
+        self.stock_data_source = getDataSourceFromConfig(agent.data_source_config)
+        self.start_date = simulation_config['start_date']
+        self.end_date = simulation_config['end_date']
+        self.stock_data_source.prepareDataForDates(self.start_date, self.end_date, self.stocks)
+
+        def dateInRange(date):
+            return self.start_date <= date <= self.end_date
+        self.available_dates = list(filter(dateInRange, self.stock_data_source.getAvailableDates()))
+        self.start_date = self.available_dates[agent.input_num_days]
+
+        session_config = {
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+            'starting_balance': simulation_config['starting_balance']
+        }
+        self.session = Session(self.stock_data_source, agent, session_config)
 
     def runSimulation(self):
         """Initiates and runs a session
@@ -68,31 +82,4 @@ class Simulation:
 
 
 if __name__ == '__main__':
-    prepare_start_date = datetime(2014, 1, 1)
-    start_date = datetime(2016, 1, 1)
-    end_date = datetime(2017, 1, 1)
-
-    stocks = ['GOOG', 'AMZN']
-    data_source_config = {'source_type': 'randomized',
-                          'child_source': {'source_type': 'real'},
-                          'variance': 0.025}
-    data_source = getDataSourceFromConfig(data_source_config)
-
-    print("Preparing data source ...")
-    data_source.prepareDataForDates(prepare_start_date, end_date, stocks)
-    print("Done!")
-
-    agent = BaseAgent(data_source_config, 0, stocks)
-
-    session_config = {'start_date': start_date,
-                      'end_date': end_date,
-                      'starting_balance': 10000,
-                      'stocks': stocks}
-
-    simulation = Simulation(data_source, agent, session_config)
-
-    print("Running simulation ...")
-    simulation.runSimulation()
-    print("Done! Plotting results ...")
-    simulation.drawPerformancePlot()
-
+    pass

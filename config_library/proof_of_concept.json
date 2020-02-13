@@ -1,0 +1,69 @@
+{
+  "agent_config": {
+    "data_source_config": {
+      "source_type": "sinusoid",
+      "stocks": ["STOCK_1", "STOCK_2"],
+      "stocks_config": {
+        "STOCK_1": {
+          "period": 30,
+          "anchor_date": "01 Jan 2015",
+          "delta": 100,
+          "magnitude": 50
+        },
+        "STOCK_2": {
+          "period": 30,
+          "anchor_date": "15 Jan 2015",
+          "delta": 100,
+          "magnitude": 50
+        }
+      }
+    },
+    "agent_type": "q_learning",
+    "input_num_days": 1,
+
+    "model_config": {
+      "model_type": "nn",
+      "epoch_number": 200,
+      "batch_size": 32,
+      "nn_configuration": [100, 100, 50, 50, 50, 50]
+    },
+
+    "learning_rate": 0.1,
+    "discount_rate": 0.8
+  },
+
+  "simulation_config": {
+    "start_date": "01 Jan 2015",
+    "end_date": "01 Apr 2015",
+    "starting_balance": 1000
+  },
+
+  "training_configs": [
+    {
+      "minimum_start_date": "01 Jan 2015",
+      "maximum_end_date": "01 Jan 2017",
+      "minimum_session_duration": 30,
+      "maximum_session_duration": 200,
+      "minimum_start_balance": 500,
+      "maximum_start_balance": 2000,
+
+      "batch_size": 10,
+      "epoch_number": 10,
+      "exploration_parameter": 0.1,
+      "variance": 0
+    },
+    {
+      "minimum_start_date": "01 Jan 2015",
+      "maximum_end_date": "01 Jan 2017",
+      "minimum_session_duration": 30,
+      "maximum_session_duration": 200,
+      "minimum_start_balance": 500,
+      "maximum_start_balance": 2000,
+
+      "batch_size": 10,
+      "epoch_number": 10,
+      "exploration_parameter": 0.001,
+      "variance": 0
+    }
+  ]
+}

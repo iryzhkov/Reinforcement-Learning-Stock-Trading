@@ -3,19 +3,23 @@
 
 from package.simulation.stockData.baseStockDataSource import StockDataSource
 
-from datetime import datetime, timedelta
+import logging
 import pandas as pd
 import math
+
+from datetime import datetime, timedelta
 
 
 # Class for generating sinusoid-like data
 class SinusoidStockDataSource(StockDataSource):
-    def __init__(self):
+    def __init__(self, stocks_config: dict):
         """Initializer for Sinusoid Stock Data Source
 
+        Args:
+            stocks_config (dict): Configuration for the stocks
         """
         super(SinusoidStockDataSource, self).__init__();
-        self.stocks_config = {}
+        self.stocks_config = stocks_config
 
     def prepareDataForDates(self, start_date, end_date, stocks):
         """Generates sinusoid data from stock_config.
@@ -24,6 +28,9 @@ class SinusoidStockDataSource(StockDataSource):
             start_date (datetime): Date range start for the preparation.
             end_date (datetime): Date range end for the preparation.
             stocks (list): List of stocks
+
+        Raises:
+
         """
         day_count = (end_date - start_date).days + 1
 

@@ -5,10 +5,12 @@ import package.simulation.agent.agentDataUtil as AgentDataUtil
 
 from package.simulation.agent.baseAgent import BaseAgent
 from package.simulation.stockData.baseStockDataSource import StockDataSource
-from package.simulation.stockData.stockDataSourceFactory import getDataSourceFromConfig
 
+import logging
 import pandas as pd
 from datetime import datetime, timedelta
+
+logger = logging.getLogger('simulation').getChild('session')
 
 
 class Session:
@@ -27,7 +29,7 @@ class Session:
         self.end_date = session_config['end_date']
 
         self.balance = session_config['starting_balance']
-        self.stocks = session_config['stocks']
+        self.stocks = self.agent.stocks
         self.stocks_owned = {}
         for stock in self.stocks:
             self.stocks_owned[stock] = 0
@@ -41,6 +43,9 @@ class Session:
         self.action_history = []
         self.stock_history = [[self.stocks_owned[stock] for stock in self.stocks]]
 
+        self.performance = {}
+        logger.info('The session is initialized.')
+
     def runSession(self):
         """Starts the session run.
         """
@@ -49,6 +54,7 @@ class Session:
         available_dates = list(filter(dateInRange, self.stock_data_source.getAvailableDates()))
         self.net_worth_history = [self._getNetWorthForDate(available_dates[0])]
 
+        logger.info('Starting session with duration {}.'.format(len(available_dates)))
         for date in available_dates:
             possible_actions = AgentDataUtil.generatePossibleActions(self.stock_data_source, self.stocks,
                                                                      date, self.balance, self.stocks_owned)
@@ -63,6 +69,9 @@ class Session:
         self.action_history = pd.DataFrame(self.action_history,
                                            index=self.records_indices[1:], columns=self.stocks)
         self.stock_history = pd.DataFrame(self.stock_history, index=self.records_indices, columns=self.stocks)
+        self._recordPerformance()
+        logger.info('Session ended with average daily growth: {}, average daily transactions: {}'.format(
+            self.performance['average_daily_growth_rate'], self.performance['average_daily_transactions']))
 
     def _executeAction(self, date: datetime, agent_action: list):
         """Executes action during the date
@@ -114,30 +123,14 @@ class Session:
 
         return result
 
-    def getPerformance(self):
-        pass
+    def _recordPerformance(self):
+        """Calculates and records the overall session performance.
+        """
+        self.performance = {
+            'average_daily_growth_rate': 0,
+            'average_daily_transactions': 0,
+        }
 
 
 if __name__ == '__main__':
-    prepare_start_date = datetime(2014, 1, 1)
-    start_date = datetime(2015, 1, 1)
-    end_date = datetime(2016, 1, 7)
-
-    stocks = ['STOCK_1', 'STOCK_2']
-    config_1 = {'period': 60, 'anchor_date': datetime(2015, 1, 1), 'delta': 100, 'magnitude': 20}
-    config_2 = {'period': 60, 'anchor_date': datetime(2015, 1, 15), 'delta': 100, 'magnitude': 20}
-    stocks_config = {stocks[0]: config_1, stocks[1]: config_2}
-
-    data_source_config = {'source_type': 'sinusoid'}
-    data_source = getDataSourceFromConfig(data_source_config)
-    data_source.prepareDataForDates(prepare_start_date, end_date, stocks_config)
-
-    agent = BaseAgent(data_source_config, 0, stocks)
-
-    session_config = {'start_date': start_date,
-                      'end_date': end_date,
-                      'starting_balance': 1000,
-                      'stocks': stocks}
-
-    session = Session(data_source, agent, session_config)
-    session.runSession()
+    pass

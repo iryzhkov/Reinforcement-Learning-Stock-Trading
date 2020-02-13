@@ -5,7 +5,6 @@ from package.simulation.stockData.realStockDataSource import RealStockDataSource
 from package.simulation.stockData.randomizedStockDataSource import RandomizedStockDataSource
 from package.simulation.stockData.sinusoidStockDataSource import SinusoidStockDataSource
 
-
 _real_data_source = None
 
 
@@ -19,17 +18,19 @@ def getRandomizedDataSourceFromConfig(config: dict):
         Randomized Stock Data Source
     """
     child_data_source = getDataSourceFromConfig(config['child_source'])
-    variance = config['variance']
-    return RandomizedStockDataSource(child_data_source, variance)
+    return RandomizedStockDataSource(child_data_source, config['variance'])
 
 
-def getSinusoidDataSource():
+def getSinusoidDataSource(config: dict):
     """Creates sinusoid data source.
+
+    Args:
+        config (dict): configuration for the data source.
 
     Returns:
         Sinusoid Stock Data Source
     """
-    return SinusoidStockDataSource()
+    return SinusoidStockDataSource(config['stocks_config'])
 
 
 def getRealDataSource():
@@ -55,9 +56,12 @@ def getDataSourceFromConfig(data_source_config: dict):
     Returns:
         A Data Source Config build based on the input config.
     """
-    if data_source_config['source_type'] == 'real': return getRealDataSource();
-    elif data_source_config['source_type'] == 'sinusoid': return getSinusoidDataSource();
-    elif data_source_config['source_type'] == 'randomized': return getRandomizedDataSourceFromConfig(data_source_config);
+    if data_source_config['source_type'] == 'real':
+        return getRealDataSource()
+    elif data_source_config['source_type'] == 'sinusoid':
+        return getSinusoidDataSource(data_source_config)
+    elif data_source_config['source_type'] == 'randomized':
+        return getRandomizedDataSourceFromConfig(data_source_config)
 
 
 if __name__ == '__main__':

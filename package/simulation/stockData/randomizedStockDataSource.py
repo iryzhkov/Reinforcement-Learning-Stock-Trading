@@ -3,8 +3,10 @@
 
 from package.simulation.stockData.baseStockDataSource import StockDataSource
 
+import logging
 import pandas as pd
 import random
+
 from datetime import datetime
 
 
@@ -24,12 +26,13 @@ class RandomizedStockDataSource(StockDataSource):
     def prepareDataForDates(self, start_date: datetime, end_date: datetime, stocks):
         """Generates random data from the data source used for the initialization.
 
+        Expects the child data source data to be already prepared.
+
         Args:
             start_date (datetime): Start of the date range
             end_date (datetime): End of the date range
             stocks (list or dict): list of stocks use.
         """
-        self.data_source.prepareDataForDates(start_date, end_date, stocks)
         for stock in stocks:
             d = {}
 

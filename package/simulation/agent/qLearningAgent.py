@@ -3,49 +3,29 @@
 
 import package.simulation.agent.baseAgent as BaseAgent
 import package.simulation.agent.agentDataUtil as DataUtil
-from package.simulation.agent.model.linearModel import LinearModel
+import package.simulation.agent.model.modelFactory as ModelFactory
 
+import logging
 import pandas as pd
 import random
 
+logger = logging.getLogger('simulation').getChild('agent').getChild('q-learning')
+
 
 class QLearningAgent(BaseAgent.BaseAgent):
-    def __init__(self, data_source_config: dict, input_num_days: int, stocks: list):
+    def __init__(self, agent_config: dict):
         """Initializer for Q Learning Agent.
 
         Args:
-            data_source_config (dict): config that was used to create data source used for this agent.
-            input_num_days (int): number of days of stock data that the agent looks into.
-            stocks (list of str): stocks that the agent can buy/sell
+            agent_config (dict): Agent configuration.
         """
-        super(QLearningAgent, self).__init__(data_source_config, input_num_days, stocks)
+        super(QLearningAgent, self).__init__(agent_config)
+        self.model_trained = False
 
-        self.model_initialized = False
-        self.model = LinearModel()
-        self.learning_rate = 0.1
-        self.discount_rate = 0.9
-        self.exploration_parameter = 0.01
-
-    def initializeModel(self, sample_model_input: pd.DataFrame):
-        """Initializes model with the provided sample output.
-        """
-        self.model.initializeModel(sample_model_input)
-        self.model_initialized = True
-
-    def pickAction(self, state_dict: dict, possible_actions: list):
-        """Picks an action based on the agent policy.
-
-        Args:
-            state_dict (dict): Dict with state data used to make a decision.
-            possible_actions (list of list of int): List of possible actions to make.
-
-        Returns:
-            An action from the possible_actions that agent selected to execute
-        """
-        if random.random() <= self.exploration_parameter:
-            return BaseAgent.pickRandomAction(possible_actions)
-        else:
-            return self.pickBestAction(state_dict, possible_actions)
+        self.model = ModelFactory.getModelFromConfig(agent_config['model_config'])
+        self.learning_rate = agent_config['learning_rate']
+        self.discount_rate = agent_config['discount_rate']
+        logger.info('Q-Learning agent initialized.')
 
     def pickBestAction(self, state_dict: dict, possible_actions: list):
         """Picks an action based on the learned policy.
@@ -57,16 +37,18 @@ class QLearningAgent(BaseAgent.BaseAgent):
         Returns:
             An action from the possible_actions
         """
-        state_action_dataframe = DataUtil.generateStateActionInputs(state_dict, possible_actions, self.stocks)
-        if not self.model_initialized:
-            self.initializeModel(state_action_dataframe)
+        if not self.model_trained:
+            return random.choice(possible_actions), 0
 
-        expected_rewards = [output['predictions'][0] for output in self.model.expectedReward(state_action_dataframe)]
-        best_action_index = expected_rewards.index(max(expected_rewards))
-        if max(expected_rewards) == 0:
-            return random.choice(possible_actions)
+        state_action_dataframe = DataUtil.generateStateActionInputs(state_dict, possible_actions, self.stocks)
+
+        expected_rewards = self.model.expectedReward(state_action_dataframe)
+        maximum_reward = max(expected_rewards)
+        best_action_index = expected_rewards.index(maximum_reward)
+        if maximum_reward == 0:
+            return random.choice(possible_actions), 0
         else:
-            return possible_actions[best_action_index]
+            return possible_actions[best_action_index], maximum_reward
 
     def train(self, sessions_data: dict):
         """Train model based on the sessions_data
@@ -80,6 +62,7 @@ class QLearningAgent(BaseAgent.BaseAgent):
         records_list = sessions_data['records']
         rewards_list = sessions_data['rewards']
 
+        logger.info('Transforming sessions data into training data')
         training_data_list = []
         for i in range(len(rewards_list)):
             training_data = DataUtil.generateTrainingDataFromSession(data_sources[i], stocks_owned[i], actions_list[i],
@@ -88,20 +71,18 @@ class QLearningAgent(BaseAgent.BaseAgent):
 
         state_action_values = pd.concat(training_data_list)
         expected_values_data_frame = state_action_values.pop('Expected Value')
+        logger.info('Training data ({} rows) is ready'.format(len(state_action_values)))
+
+        logger.info('Starting model training.')
         self.model.train(state_action_values, expected_values_data_frame)
+        self.model_trained = True
+        logger.info('Model training finished.')
 
     def expectedModelValue(self, state_dict, action, next_state_dict, next_action, possible_next_actions, reward):
         """Returns value that Agent expects from the model for given State-Action and Next State-Action
         """
-        current_sate_action_data_frame = DataUtil.generateStateActionInputs(state_dict, [action.values.tolist()],
-                                                                            self.stocks)
-        next_state_action_data_frame = DataUtil.generateStateActionInputs(next_state_dict,
-                                                                          [self.pickBestAction(next_state_dict,
-                                                                                               possible_next_actions)],
-                                                                          self.stocks)
-        current_model_values = [output['predictions'][0] for output in self.model.expectedReward(
-            pd.concat([current_sate_action_data_frame, next_state_action_data_frame]))]
-        current_state_action_q_value, next_state_action_q_value = current_model_values
+        next_state_best_action, next_state_action_q_value = self.pickBestAction(next_state_dict, possible_next_actions)
+        current_state_action, current_state_action_q_value = self.pickBestAction(state_dict, [action.values.tolist()])
 
         new_expected_model_value = current_state_action_q_value + self.learning_rate * (
                 reward + self.discount_rate * next_state_action_q_value - current_state_action_q_value)

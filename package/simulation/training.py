@@ -1,7 +1,7 @@
 """Training class used to run multiple sessions with a single agent.
 """
 
-from package.simulation.agent.qLearningAgent import QLearningAgent
+from package.simulation.agent.baseAgent import BaseAgent
 from package.simulation.session import Session
 from package.simulation.stockData.randomizedStockDataSource import RandomizedStockDataSource
 from package.simulation.stockData.stockDataSourceFactory import getDataSourceFromConfig
@@ -10,55 +10,68 @@ import logging
 import pandas as pd
 import random
 
-from datetime import datetime
+logger = logging.getLogger('simulation').getChild('training')
 
-logger = logging.getLogger('training')
-dateFmt = '%d %b %Y'
 
 class Training:
-    def __init__(self, stock_data_source, agent, start_date, end_date, stocks):
+    def __init__(self, agent: BaseAgent, training_config: dict):
+        """Initializes training for the agent.
+
+        Unpacks variables from the training_config.
+
+        Args:
+            agent (BaseAgent): The agent that will be trained.
+            training_config (dict): Configuration for the training.
+        """
         self.agent = agent
-        self.stock_data_source = stock_data_source
-        self.minimum_start_date = start_date
-        self.maximum_end_date = end_date
-        self.stocks = stocks
+        self.stock_data_source = getDataSourceFromConfig(self.agent.data_source_config)
+
+        self.minimum_start_date = training_config['minimum_start_date']
+        self.maximum_end_date = training_config['maximum_end_date']
+        self.minimum_session_duration = training_config['minimum_session_duration']
+        self.maximum_session_duration = training_config['maximum_session_duration']
+        self.minimum_start_balance = training_config['minimum_start_balance']
+        self.maximum_start_balance = training_config['maximum_start_balance']
+
+        self.batch_size = training_config['batch_size']
+        self.epoch_number = training_config['epoch_number']
+
+        self.agent.exploration_parameter = training_config['exploration_parameter']
+        self.stocks = agent.stocks
 
         self.stock_data_source.prepareDataForDates(self.minimum_start_date, self.maximum_end_date, self.stocks)
 
         def dateInRange(date):
             return self.minimum_start_date <= date <= self.maximum_end_date
-
         self.available_dates = list(filter(dateInRange, self.stock_data_source.getAvailableDates()))
-
-        self.minimum_session_duration = 20
-        self.exploration_parameter = 0
-        self.batch_size = 2
-        self.epoch_number = 2
-
-        self.minimum_start_balance = 500
-        self.maximum_start_balance = 2000
-
-        self.agent.exploration_parameter = 1
+        logger.info('Finished initializing training.')
 
     def startTraining(self):
         """Starts training of the agent.
         """
+        logger.info('Starting training for the agent.')
         for epoch_iteration in range(self.epoch_number):
+            logger.info('Starting training epoch {} out of {}.'.format(epoch_iteration + 1, self.epoch_number))
             sessions_data = {'records': [], 'data_sources': [], 'actions': [], 'stocks_owned': [], 'rewards': []}
             for batch_iteration in range(self.batch_size):
+                logger.info('Starting session {} out of {}.'.format(batch_iteration + 1, self.batch_size))
                 session_config, data_source_start_date, data_source_end_date = self._generateSessionConfiguration()
-                data_source = RandomizedStockDataSource(self.stock_data_source, variance=0.025)
+                data_source = RandomizedStockDataSource(self.stock_data_source, variance=0)
                 data_source.prepareDataForDates(data_source_start_date, data_source_end_date, self.stocks)
+                logger.info('Generated data source for the session')
 
                 session = Session(data_source, self.agent, session_config)
                 session.runSession()
+                logger.info('Session ended. Saving session results')
 
                 sessions_data['records'].append(session.records)
                 sessions_data['data_sources'].append(data_source)
                 sessions_data['actions'].append(session.action_history)
                 sessions_data['stocks_owned'].append(session.stock_history)
 
+            logger.info('Training epoch ended. Generating rewards for the sessions.')
             sessions_data['rewards'] = self._generateRewards(sessions_data['records'])
+            logger.info('Sending session results for agent training.')
             self.agent.train(sessions_data)
 
     @staticmethod
@@ -75,7 +88,7 @@ class Training:
         for records in records_list:
             rewards = []
             for index in range(1, len(records)):
-                reward = records.iloc[index]['Net Worth'] / records.iloc[index - 1]['Net Worth'] - 1
+                reward = records.iloc[index]['Net Worth'] / records.iloc[index - 1]['Net Worth'] - 1.01
                 rewards.append(reward)
             rewards_list.append(pd.DataFrame(rewards, columns=['Reward'], index=records.index[1:]))
         return rewards_list
@@ -83,8 +96,8 @@ class Training:
     def _generateSessionConfiguration(self):
         """Generates random session configuration within given parameters.
         """
-        session_days_duration = random.randrange(self.minimum_session_duration, len(self.available_dates) -
-                                                 self.agent.input_num_days)
+        session_days_duration = random.randrange(self.minimum_session_duration, min(self.maximum_session_duration, len(self.available_dates) -
+                                                 self.agent.input_num_days))
         start_date_index = random.randrange(self.agent.input_num_days, len(self.available_dates) -
                                             session_days_duration)
         end_date_index = start_date_index + session_days_duration
@@ -105,20 +118,4 @@ class Training:
 
 
 if __name__ == '__main__':
-    prepare_start_date = datetime(2014, 1, 1)
-    start_date = datetime(2016, 1, 1)
-    end_date = datetime(2016, 4, 1)
-
-    stocks = ['GOOG']
-    data_source_config = {'source_type': 'real'}
-    test_data_source = getDataSourceFromConfig(data_source_config)
-
-    print("Preparing data source ...")
-    test_data_source.prepareDataForDates(prepare_start_date, end_date, stocks)
-    print("Done!")
-
-    agent = QLearningAgent(data_source_config, 2, stocks)
-    training = Training(test_data_source, agent, start_date, end_date, stocks)
-
-    print("Running training ...")
-    training.startTraining()
+    pass
