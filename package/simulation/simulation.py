@@ -26,6 +26,7 @@ class Simulation:
         self.start_date = simulation_config['start_date']
         self.end_date = simulation_config['end_date']
         self.stock_data_source.prepareDataForDates(self.start_date, self.end_date, self.stocks)
+        agent.exploration_parameter = 0
 
         def dateInRange(date):
             return self.start_date <= date <= self.end_date

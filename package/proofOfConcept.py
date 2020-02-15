@@ -29,5 +29,6 @@ def proofOfConcept():
     simulation.runSimulation()
     simulation.drawPerformancePlot()
 
+
 if __name__ == '__main__':
     proofOfConcept()

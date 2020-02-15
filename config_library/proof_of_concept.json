@@ -2,30 +2,24 @@
   "agent_config": {
     "data_source_config": {
       "source_type": "sinusoid",
-      "stocks": ["STOCK_1", "STOCK_2"],
+      "stocks": ["STOCK_1"],
       "stocks_config": {
         "STOCK_1": {
           "period": 30,
           "anchor_date": "01 Jan 2015",
           "delta": 100,
           "magnitude": 50
-        },
-        "STOCK_2": {
-          "period": 30,
-          "anchor_date": "15 Jan 2015",
-          "delta": 100,
-          "magnitude": 50
         }
       }
     },
     "agent_type": "q_learning",
-    "input_num_days": 1,
+    "input_num_days": 2,
 
     "model_config": {
       "model_type": "nn",
-      "epoch_number": 200,
+      "epoch_number": 75,
       "batch_size": 32,
-      "nn_configuration": [100, 100, 50, 50, 50, 50]
+      "nn_configuration": [40, 40, 40, 40]
     },
 
     "learning_rate": 0.1,
@@ -44,26 +38,65 @@
       "maximum_end_date": "01 Jan 2017",
       "minimum_session_duration": 30,
       "maximum_session_duration": 200,
-      "minimum_start_balance": 500,
-      "maximum_start_balance": 2000,
+      "minimum_start_balance": 1000,
+      "maximum_start_balance": 1100,
 
       "batch_size": 10,
-      "epoch_number": 10,
-      "exploration_parameter": 0.1,
-      "variance": 0
+      "epoch_number": 5,
+      "exploration_parameter": 0.2,
+      "variance": 0.0025
     },
     {
       "minimum_start_date": "01 Jan 2015",
       "maximum_end_date": "01 Jan 2017",
       "minimum_session_duration": 30,
       "maximum_session_duration": 200,
-      "minimum_start_balance": 500,
-      "maximum_start_balance": 2000,
+      "minimum_start_balance": 1000,
+      "maximum_start_balance": 1100,
+
+      "batch_size": 10,
+      "epoch_number": 5,
+      "exploration_parameter": 0.1,
+      "variance": 0.0025
+    },
+    {
+      "minimum_start_date": "01 Jan 2015",
+      "maximum_end_date": "01 Jan 2017",
+      "minimum_session_duration": 30,
+      "maximum_session_duration": 200,
+      "minimum_start_balance": 1000,
+      "maximum_start_balance": 1100,
+
+      "batch_size": 10,
+      "epoch_number": 5,
+      "exploration_parameter": 0.05,
+      "variance": 0.0025
+    },
+    {
+      "minimum_start_date": "01 Jan 2015",
+      "maximum_end_date": "01 Jan 2017",
+      "minimum_session_duration": 30,
+      "maximum_session_duration": 200,
+      "minimum_start_balance": 1000,
+      "maximum_start_balance": 1100,
 
       "batch_size": 10,
       "epoch_number": 10,
-      "exploration_parameter": 0.001,
-      "variance": 0
+      "exploration_parameter": 0.01,
+      "variance": 0.0025
+    },
+    {
+      "minimum_start_date": "01 Jan 2015",
+      "maximum_end_date": "01 Jan 2017",
+      "minimum_session_duration": 30,
+      "maximum_session_duration": 200,
+      "minimum_start_balance": 1000,
+      "maximum_start_balance": 1100,
+
+      "batch_size": 10,
+      "epoch_number": 10,
+      "exploration_parameter": 0.005,
+      "variance": 0.0025
     }
   ]
 }

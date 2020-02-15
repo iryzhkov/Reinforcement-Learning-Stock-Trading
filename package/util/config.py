@@ -1,7 +1,7 @@
 """Util for opening configuration files.
 """
 
-import package.util.json as JSON
+import package.util.jsonUtil as JSON
 
 from os.path import dirname, join, exists
 

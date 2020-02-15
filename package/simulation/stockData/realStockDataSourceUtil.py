@@ -1,7 +1,7 @@
 """Utils used by Real Stock Data Source.
 """
 
-import package.util.json as JSON
+import package.util.jsonUtil as JSON
 
 import quandl
 import pandas as pd

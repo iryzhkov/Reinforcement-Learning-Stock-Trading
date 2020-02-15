@@ -89,6 +89,24 @@ class QLearningAgent(BaseAgent.BaseAgent):
 
         return new_expected_model_value
 
+    def expectedModelValues(self, state_action_values, actions, rewards, data_source):
+        """Returns value that Agent expects from the model for given State-Action and Next State-Action
+        """
+        current_model_values = self.model.expectedReward(state_action_values)
+
+        next_state_action_q_value = current_model_values[-1]
+
+        expected_model_values = {}
+        for index, date in enumerate(reversed(state_action_values.index[:-1])):
+            current_state_action_q_value = current_model_values[index]
+            # TODO(igor.o.ryzhkov@gmail.com): change next state if the action was random
+            expected_model_values[date] = current_state_action_q_value + self.learning_rate * (
+                    rewards.loc[date] + self.discount_rate * next_state_action_q_value - current_state_action_q_value)
+            next_state_action_q_value = expected_model_values[date]
+
+        expected_model_values = pd.DataFrame.from_dict(expected_model_values, orient='index')
+        expected_model_values = expected_model_values.rename(columns={'Reward': 'Expected Value'})
+        return expected_model_values
 
 if __name__ == '__main__':
     pass

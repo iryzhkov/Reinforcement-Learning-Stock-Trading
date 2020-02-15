@@ -42,6 +42,45 @@ def generateStateInputForAgent(stock_data_source: StockDataSource, agent: BaseAg
     return state
 
 
+def generateStateInputsForAgent(stock_data_source: StockDataSource, agent: BaseAgent,
+                                records: pd.DataFrame, stocks_owned: pd.DataFrame):
+    """Generates state input to use for the agent.
+
+    Args:
+        stock_data_source (StockDataSource): Stock data source used for the session
+        agent (BaseAgent): Agent that will get the data
+        records (pd.DataFrame): Session records.
+        stocks_owned (dict): Stocks owned during the session.
+
+    Returns:
+        A dict with the state data. Used as an input to the agent.
+    """
+    columns_to_change = {}
+    for stock in agent.stocks:
+        columns_to_change[stock] = ownedFmt.format(stock)
+    states = stocks_owned.rename(columns=columns_to_change)
+    states = states.join(records[:]['Balance'])
+
+    last_date = records.index[-1]
+    stocks_prices_formatted = {}
+    stocks_prices = stock_data_source.getStockDataForNDaysBefore(last_date, agent.input_num_days + len(records) - 1,
+                                                                 agent.stocks)
+
+    for num_days_before in range(1, agent.input_num_days + 1):
+        for stock in agent.stocks:
+            first_index = agent.input_num_days - num_days_before
+            last_index = len(stocks_prices[stock]) - num_days_before + 1
+            stocks_prices_formatted[highFmt.format(stock, num_days_before)] = stocks_prices[stock]['High'][first_index:last_index]
+            stocks_prices_formatted[lowFmt.format(stock, num_days_before)] = stocks_prices[stock]['Low'][first_index:last_index]
+
+    for k in stocks_prices_formatted:
+        stocks_prices_formatted[k].index = records.index
+    stock_prices_dataframe = pd.DataFrame(stocks_prices_formatted)
+
+    states = states.join(stock_prices_dataframe)
+    return states
+
+
 def generateStateActionInputs(state_dict: dict, possible_actions: list, stocks: list):
     """Generates State-Action inputs used for the model.
 
@@ -100,61 +139,16 @@ def generateTrainingDataFromSession(data_source, stocks_owned, actions, rewards,
     available_dates = available_dates.intersection(set(rewards.index))
     available_dates = sorted(available_dates.intersection(set(records.index)))
 
-    training_data_dict = {
-        'Balance': [],
-        'Expected Value': [],
-    }
+    states = generateStateInputsForAgent(data_source, agent, records[available_dates[0]:available_dates[-1]],
+                                         stocks_owned[available_dates[0]:available_dates[-1]])
+    rewards = rewards[available_dates[0]:available_dates[-1]]
+    actions = actions[available_dates[0]:available_dates[-1]]
+    action_columns = {}
     for stock in agent.stocks:
-        training_data_dict[ownedFmt.format(stock)] = []
-        training_data_dict[actionFmt.format(stock)] = []
-        for days_before in range(agent.input_num_days):
-            training_data_dict[highFmt.format(stock, days_before + 1)] = []
-            training_data_dict[lowFmt.format(stock, days_before + 1)] = []
+        action_columns[stock] = actionFmt.format(stock)
+    state_action_values = states.join(actions.rename(columns=action_columns))
+    expectations = agent.expectedModelValues(state_action_values, actions, rewards, data_source)
 
-    def getStateForIndex(index: int):
-        """Gets state for nth date in the session
-
-        Args:
-            index: Index of the date
-
-        Returns:
-            State dict
-        """
-        date = available_dates[index]
-        return generateStateInputForAgent(data_source, agent, date,
-                                          records.loc[date]['Balance'], stocks_owned.loc[date])
-
-    def getActionsForIndex(index: int):
-        """Gets actions for nth date in the session
-
-        Args:
-            index: Index of the date
-
-        Returns:
-            Actions list
-        """
-        return actions.loc[available_dates[index]]
-
-    next_state = getStateForIndex(0)
-    next_actions = getActionsForIndex(0)
-    for date_index, date in enumerate(available_dates[:-1]):
-        current_state = next_state
-        current_actions = next_actions
-
-        next_state = getStateForIndex(date_index + 1)
-        next_actions = getActionsForIndex(date_index + 1)
-        possible_next_actions = generatePossibleActions(data_source, agent.stocks, date, current_state['Balance'],
-                                                        stocks_owned.loc[date])
-
-        current_state['Expected Value'] = agent.expectedModelValue(current_state, current_actions,
-                                                                   next_state, next_actions, possible_next_actions,
-                                                                   rewards.loc[date]['Reward'])
-
-        for stock in agent.stocks:
-            current_state[actionFmt.format(stock)] = actions.loc[date][stock]
-
-        for key in current_state:
-            training_data_dict[key].append(current_state[key])
-
-    training_data = pd.DataFrame.from_dict(training_data_dict)
-    return training_data
+    training_data = state_action_values.join(expectations)
+    debug_data = training_data.join(rewards) # includes rewards to see how the attribution works.
+    return training_data[:available_dates[-2]]

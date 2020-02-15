@@ -7,6 +7,7 @@ from package.simulation.stockData.randomizedStockDataSource import RandomizedSto
 from package.simulation.stockData.stockDataSourceFactory import getDataSourceFromConfig
 
 import logging
+import math
 import pandas as pd
 import random
 
@@ -88,9 +89,10 @@ class Training:
         for records in records_list:
             rewards = []
             for index in range(1, len(records)):
-                reward = records.iloc[index]['Net Worth'] / records.iloc[index - 1]['Net Worth'] - 1.01
+                growth_rate = records.iloc[index]['Net Worth'] / records.iloc[index - 1]['Net Worth'] - 1.01
+                reward = 2 / (2 + math.expm1(-growth_rate * 10)) - 1
                 rewards.append(reward)
-            rewards_list.append(pd.DataFrame(rewards, columns=['Reward'], index=records.index[1:]))
+            rewards_list.append(pd.DataFrame(rewards, columns=['Reward'], index=records.index[:-1]))
         return rewards_list
 
     def _generateSessionConfiguration(self):
