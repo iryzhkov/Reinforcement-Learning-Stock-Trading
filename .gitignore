@@ -3,4 +3,5 @@
 *.swp
 
 /.idea
+/.plots
 /offline_stock_data/*

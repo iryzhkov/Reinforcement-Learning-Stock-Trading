@@ -71,7 +71,7 @@ class Session:
         self.stock_history = pd.DataFrame(self.stock_history, index=self.records_indices, columns=self.stocks)
         self._recordPerformance()
         logger.info('Session ended with average daily growth: {}, average daily transactions: {}'.format(
-            self.performance['average_daily_growth_rate'], self.performance['average_daily_transactions']))
+            self.performance['session_growth_rate'], self.performance['average_daily_transactions']))
 
     def _executeAction(self, date: datetime, agent_action: list):
         """Executes action during the date
@@ -126,8 +126,9 @@ class Session:
     def _recordPerformance(self):
         """Calculates and records the overall session performance.
         """
+        total_growth = self.records.iloc[-1]['Net Worth'] / self.records.iloc[0]['Net Worth'] - 1
         self.performance = {
-            'average_daily_growth_rate': 0,
+            'session_growth_rate': total_growth,
             'average_daily_transactions': 0,
         }
 

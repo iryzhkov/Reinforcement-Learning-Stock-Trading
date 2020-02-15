@@ -2,6 +2,7 @@
 """
 import package.util.config as Configuration
 import package.simulation.agent.agentFactory as AgentFactory
+from package.util.plotter import Plotter
 
 from package.simulation.simulation import Simulation
 from package.simulation.training import Training
@@ -20,14 +21,14 @@ def proofOfConcept():
 
     configuration = Configuration.getConfiguration('proof_of_concept')
     agent = AgentFactory.getAgentFromConfig(configuration['agent_config'])
+    plotter = Plotter(configuration['plotting_config'])
 
     for training_config in configuration['training_configs']:
-        training = Training(agent, training_config)
+        training = Training(agent, training_config, plotter)
         training.startTraining()
 
-    simulation = Simulation(agent, configuration['simulation_config'])
+    simulation = Simulation(agent, configuration['simulation_config'], plotter)
     simulation.runSimulation()
-    simulation.drawPerformancePlot()
 
 
 if __name__ == '__main__':

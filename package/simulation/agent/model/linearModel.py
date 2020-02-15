@@ -3,9 +3,6 @@
 
 from package.simulation.agent.model.baseModel import BaseModel
 
-import pandas as pd
-import logging
-
 from sklearn import linear_model
 
 

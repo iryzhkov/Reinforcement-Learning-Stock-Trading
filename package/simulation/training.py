@@ -5,6 +5,7 @@ from package.simulation.agent.baseAgent import BaseAgent
 from package.simulation.session import Session
 from package.simulation.stockData.randomizedStockDataSource import RandomizedStockDataSource
 from package.simulation.stockData.stockDataSourceFactory import getDataSourceFromConfig
+from package.util.plotter import Plotter
 
 import logging
 import math
@@ -15,7 +16,7 @@ logger = logging.getLogger('simulation').getChild('training')
 
 
 class Training:
-    def __init__(self, agent: BaseAgent, training_config: dict):
+    def __init__(self, agent: BaseAgent, training_config: dict, plotter=None):
         """Initializes training for the agent.
 
         Unpacks variables from the training_config.
@@ -23,9 +24,13 @@ class Training:
         Args:
             agent (BaseAgent): The agent that will be trained.
             training_config (dict): Configuration for the training.
+            plotter (Plotter): Plotter to use for performance recording
         """
         self.agent = agent
+        self.training_name = training_config['training_name']
+        self.plotter = plotter
         self.stock_data_source = getDataSourceFromConfig(self.agent.data_source_config)
+        self.variance = training_config['variance']
 
         self.minimum_start_date = training_config['minimum_start_date']
         self.maximum_end_date = training_config['maximum_end_date']
@@ -54,10 +59,11 @@ class Training:
         for epoch_iteration in range(self.epoch_number):
             logger.info('Starting training epoch {} out of {}.'.format(epoch_iteration + 1, self.epoch_number))
             sessions_data = {'records': [], 'data_sources': [], 'actions': [], 'stocks_owned': [], 'rewards': []}
+            sessions = []
             for batch_iteration in range(self.batch_size):
                 logger.info('Starting session {} out of {}.'.format(batch_iteration + 1, self.batch_size))
                 session_config, data_source_start_date, data_source_end_date = self._generateSessionConfiguration()
-                data_source = RandomizedStockDataSource(self.stock_data_source, variance=0)
+                data_source = RandomizedStockDataSource(self.stock_data_source, variance=self.variance)
                 data_source.prepareDataForDates(data_source_start_date, data_source_end_date, self.stocks)
                 logger.info('Generated data source for the session')
 
@@ -69,11 +75,20 @@ class Training:
                 sessions_data['data_sources'].append(data_source)
                 sessions_data['actions'].append(session.action_history)
                 sessions_data['stocks_owned'].append(session.stock_history)
+                sessions += [session]
+
+            if self.plotter:
+                filename = '{}_epoch_{}'.format(self.training_name, epoch_iteration + 1)
+                self.plotter.plotSession(random.choice(sessions), filename)
 
             logger.info('Training epoch ended. Generating rewards for the sessions.')
             sessions_data['rewards'] = self._generateRewards(sessions_data['records'])
             logger.info('Sending session results for agent training.')
             self.agent.train(sessions_data)
+
+        if self.plotter:
+            filename = '{}_epoch_{}'.format(self.training_name, epoch_iteration + 1)
+            self.plotter.plotTraining(self, filename)
 
     @staticmethod
     def _generateRewards(records_list: list):
@@ -89,8 +104,9 @@ class Training:
         for records in records_list:
             rewards = []
             for index in range(1, len(records)):
-                growth_rate = records.iloc[index]['Net Worth'] / records.iloc[index - 1]['Net Worth'] - 1.01
-                reward = 2 / (2 + math.expm1(-growth_rate * 10)) - 1
+                growth = records.iloc[index]['Net Worth'] - records.iloc[index - 1]['Net Worth']
+                growth_rate = growth / records.iloc[0]['Balance'] - 0.01
+                reward = 2 / (2 + math.expm1(-growth_rate * 75)) - 1
                 rewards.append(reward)
             rewards_list.append(pd.DataFrame(rewards, columns=['Reward'], index=records.index[:-1]))
         return rewards_list

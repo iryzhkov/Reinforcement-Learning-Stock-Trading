@@ -2,7 +2,6 @@
 """
 
 from package.simulation.stockData.baseStockDataSource import StockDataSource
-from package.simulation.agent.baseAgent import BaseAgent
 
 import pandas as pd
 
@@ -14,7 +13,7 @@ lowFmt = '{}_low_{}_days_ago'
 actionFmt = '{}_action'
 
 
-def generateStateInputForAgent(stock_data_source: StockDataSource, agent: BaseAgent,
+def generateStateInputForAgent(stock_data_source: StockDataSource, agent,
                                date: datetime, balance: float, stocks_owned: dict):
     """Generates state input to use for the agent.
 
@@ -42,7 +41,7 @@ def generateStateInputForAgent(stock_data_source: StockDataSource, agent: BaseAg
     return state
 
 
-def generateStateInputsForAgent(stock_data_source: StockDataSource, agent: BaseAgent,
+def generateStateInputsForAgent(stock_data_source: StockDataSource, agent,
                                 records: pd.DataFrame, stocks_owned: pd.DataFrame):
     """Generates state input to use for the agent.
 

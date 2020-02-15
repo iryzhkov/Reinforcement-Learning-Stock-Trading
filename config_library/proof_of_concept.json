@@ -17,16 +17,23 @@
 
     "model_config": {
       "model_type": "nn",
-      "epoch_number": 75,
+      "epoch_number": 20,
       "batch_size": 32,
-      "nn_configuration": [40, 40, 40, 40]
+      "nn_configuration": [40, 40, 20, 20, 20, 20],
+      "learning_rate" : "invscaling"
     },
 
     "learning_rate": 0.1,
     "discount_rate": 0.8
   },
 
+  "plotting_config": {
+    "path": "proof_of_concept"
+  },
+
   "simulation_config": {
+    "simulation_name": "final_simulation",
+
     "start_date": "01 Jan 2015",
     "end_date": "01 Apr 2015",
     "starting_balance": 1000
@@ -34,69 +41,34 @@
 
   "training_configs": [
     {
-      "minimum_start_date": "01 Jan 2015",
-      "maximum_end_date": "01 Jan 2017",
-      "minimum_session_duration": 30,
-      "maximum_session_duration": 200,
-      "minimum_start_balance": 1000,
-      "maximum_start_balance": 1100,
+      "training_name": "first_training",
 
-      "batch_size": 10,
-      "epoch_number": 5,
-      "exploration_parameter": 0.2,
-      "variance": 0.0025
-    },
-    {
       "minimum_start_date": "01 Jan 2015",
       "maximum_end_date": "01 Jan 2017",
       "minimum_session_duration": 30,
       "maximum_session_duration": 200,
-      "minimum_start_balance": 1000,
+      "minimum_start_balance": 900,
       "maximum_start_balance": 1100,
 
       "batch_size": 10,
       "epoch_number": 5,
       "exploration_parameter": 0.1,
-      "variance": 0.0025
+      "variance": 0.05
     },
     {
+      "training_name": "second_training",
+
       "minimum_start_date": "01 Jan 2015",
       "maximum_end_date": "01 Jan 2017",
       "minimum_session_duration": 30,
       "maximum_session_duration": 200,
-      "minimum_start_balance": 1000,
+      "minimum_start_balance": 900,
       "maximum_start_balance": 1100,
 
       "batch_size": 10,
-      "epoch_number": 5,
-      "exploration_parameter": 0.05,
-      "variance": 0.0025
-    },
-    {
-      "minimum_start_date": "01 Jan 2015",
-      "maximum_end_date": "01 Jan 2017",
-      "minimum_session_duration": 30,
-      "maximum_session_duration": 200,
-      "minimum_start_balance": 1000,
-      "maximum_start_balance": 1100,
-
-      "batch_size": 10,
-      "epoch_number": 10,
-      "exploration_parameter": 0.01,
-      "variance": 0.0025
-    },
-    {
-      "minimum_start_date": "01 Jan 2015",
-      "maximum_end_date": "01 Jan 2017",
-      "minimum_session_duration": 30,
-      "maximum_session_duration": 200,
-      "minimum_start_balance": 1000,
-      "maximum_start_balance": 1100,
-
-      "batch_size": 10,
-      "epoch_number": 10,
+      "epoch_number": 40,
       "exploration_parameter": 0.005,
-      "variance": 0.0025
+      "variance": 0.05
     }
   ]
 }
