@@ -19,7 +19,6 @@ class RealStockDataSource(StockDataSource):
         """
         super(RealStockDataSource, self).__init__()
         self.manifest = Util.getOfflineStockDataManifest()
-        print(logger.root.level)
         logger.warning('Loaded offline stock data manifest')
         logger.info('Loaded offline stock data manifest')
 

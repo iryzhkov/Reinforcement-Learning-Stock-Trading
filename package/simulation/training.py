@@ -105,8 +105,10 @@ class Training:
             rewards = []
             for index in range(1, len(records)):
                 growth = records.iloc[index]['Net Worth'] - records.iloc[index - 1]['Net Worth']
-                growth_rate = growth / records.iloc[0]['Balance'] - 0.01
-                reward = 2 / (2 + math.expm1(-growth_rate * 75)) - 1
+                growth_rate = growth / records.iloc[index-1]['Net Worth'] - 0.01
+                if growth_rate < 0:
+                    growth_rate *= 2
+                reward = 2 / (2 + math.expm1(-growth_rate * 10)) - 1
                 rewards.append(reward)
             rewards_list.append(pd.DataFrame(rewards, columns=['Reward'], index=records.index[:-1]))
         return rewards_list

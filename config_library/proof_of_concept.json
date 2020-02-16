@@ -1,8 +1,8 @@
 {
   "agent_config": {
     "data_source_config": {
-      "source_type": "sinusoid",
-      "stocks": ["STOCK_1"],
+      "source_type": "real",
+      "stocks": ["AAPL", "AMZN", "GOOG", "FB"],
       "stocks_config": {
         "STOCK_1": {
           "period": 30,
@@ -13,18 +13,18 @@
       }
     },
     "agent_type": "q_learning",
-    "input_num_days": 2,
+    "input_num_days": 20,
 
     "model_config": {
       "model_type": "nn",
-      "epoch_number": 20,
-      "batch_size": 32,
-      "nn_configuration": [40, 40, 20, 20, 20, 20],
-      "learning_rate" : "invscaling"
+      "epoch_number": 10,
+      "batch_size": 100,
+      "nn_configuration": [40, 40, 40, 40, 40, 40],
+      "learning_rate" : "constant"
     },
 
-    "learning_rate": 0.1,
-    "discount_rate": 0.8
+    "learning_rate": 0.05,
+    "discount_rate": 0.95
   },
 
   "plotting_config": {
@@ -34,9 +34,9 @@
   "simulation_config": {
     "simulation_name": "final_simulation",
 
-    "start_date": "01 Jan 2015",
-    "end_date": "01 Apr 2015",
-    "starting_balance": 1000
+    "start_date": "01 Jan 2019",
+    "end_date": "01 Apr 2019",
+    "starting_balance": 5000
   },
 
   "training_configs": [
@@ -44,29 +44,29 @@
       "training_name": "first_training",
 
       "minimum_start_date": "01 Jan 2015",
-      "maximum_end_date": "01 Jan 2017",
-      "minimum_session_duration": 30,
-      "maximum_session_duration": 200,
-      "minimum_start_balance": 900,
-      "maximum_start_balance": 1100,
+      "maximum_end_date": "01 Jan 2018",
+      "minimum_session_duration": 60,
+      "maximum_session_duration": 300,
+      "minimum_start_balance": 1000,
+      "maximum_start_balance": 10000,
 
       "batch_size": 10,
       "epoch_number": 5,
-      "exploration_parameter": 0.1,
+      "exploration_parameter": 0.4,
       "variance": 0.05
     },
     {
       "training_name": "second_training",
 
       "minimum_start_date": "01 Jan 2015",
-      "maximum_end_date": "01 Jan 2017",
-      "minimum_session_duration": 30,
-      "maximum_session_duration": 200,
-      "minimum_start_balance": 900,
-      "maximum_start_balance": 1100,
+      "maximum_end_date": "01 Jan 2018",
+      "minimum_session_duration": 60,
+      "maximum_session_duration": 300,
+      "minimum_start_balance": 1000,
+      "maximum_start_balance": 10000,
 
       "batch_size": 10,
-      "epoch_number": 40,
+      "epoch_number": 500,
       "exploration_parameter": 0.005,
       "variance": 0.05
     }
